@@ -36,7 +36,7 @@ class User extends Authenticatable
     // Relasi ke borrowings
     public function borrowings()
     {
-        return $this->hasMany(Borrowing::class);
+        return $this->hasMany(Borrow::class);
     }
 
     // Helper method cek role
