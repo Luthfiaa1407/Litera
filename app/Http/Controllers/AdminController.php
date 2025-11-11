@@ -13,36 +13,57 @@ class AdminController extends Controller
     public function dashboard()
     {
         try {
-            // Ambil data statistik dari database
+            $user = Auth::user();
+            
+            // AUTO RETURN: Cek dan proses buku yang sudah lewat tanggal kembali
+            $overdueBorrows = Borrow::where('status', 'active')
+                ->whereDate('return_date', '<', now()->toDateString())
+                ->get();
+
+            foreach ($overdueBorrows as $borrow) {
+                // Kembalikan stok buku
+                $borrow->book->increment('stock');
+                
+                // Update status ke auto_returned
+                $borrow->update([
+                    'status' => 'auto_returned',
+                ]);
+            }
+
             $totalUsers = User::where('role', 'pengguna')->count();
             $totalAdmins = User::where('role', 'admin')->count();
             $totalBooks = Book::count();
-            $activeBorrows = Borrow::where('status', 'dipinjam')->count();
-            $overdueBorrows = Borrow::where('status', 'terlambat')->count();
+            
+            // Statistik baru berdasarkan sistem approval
+            $pendingRequests = Borrow::pending()->count();
+            $activeBorrows = Borrow::active()->count();
+            $approvedRequests = Borrow::approved()->count();
+            $autoReturnedCount = Borrow::where('status', 'auto_returned')->count();
 
-            // Ambil aktivitas terbaru
+            // Aktivitas terbaru
             $recentActivities = Borrow::with('user', 'book')
                 ->latest()
                 ->take(5)
                 ->get();
 
-            // Ambil peringatan
-            $warnings = Borrow::where('status', 'terlambat')
-                ->orWhere('return_date', '<', now())
+            // Peringatan - sekarang untuk request pending yang butuh approval
+            $pendingApprovals = Borrow::pending()
                 ->with('user', 'book')
                 ->get();
 
             return view('admin.dashboard', compact(
+                'user',
                 'totalUsers',
                 'totalAdmins', 
                 'totalBooks',
+                'pendingRequests', 
                 'activeBorrows',
-                'overdueBorrows',
+                'approvedRequests',
+                'autoReturnedCount',
                 'recentActivities',
-                'warnings'
+                'pendingApprovals'
             ));
         } catch (\Exception $e) {
-            // JANGAN redirect ke admin.dashboard di sini, itu menyebabkan loop
             return back()->withErrors(['error' => 'Gagal memuat dashboard: ' . $e->getMessage()]);
         }
     }

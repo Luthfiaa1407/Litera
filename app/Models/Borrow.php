@@ -9,7 +9,6 @@ class Borrow extends Model
 {
     use HasFactory;
 
-    // Tentukan nama tabel secara eksplisit
     protected $table = 'borrowings';
 
     protected $fillable = [
@@ -17,12 +16,18 @@ class Borrow extends Model
         'book_id',
         'borrow_date',
         'return_date', 
-        'status'
+        'status', // ['pending', 'approved', 'rejected', 'active', 'returned', 'auto_returned']
+        'admin_notes',
+        'request_date',
+        'approved_date',
+        'approved_by'
     ];
 
     protected $dates = [
         'borrow_date',
-        'return_date'
+        'return_date',
+        'request_date',
+        'approved_date'
     ];
 
     public function user()
@@ -33,5 +38,32 @@ class Borrow extends Model
     public function book()
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    // Scope untuk status berbeda
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    // Cek apakah sudah melewati tenggat waktu
+    public function getIsOverdueAttribute()
+    {
+        return $this->status === 'active' && $this->return_date < now();
     }
 }
