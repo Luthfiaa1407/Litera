@@ -56,6 +56,7 @@
                 <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link">Dashboard</a></li>
               @elseif(Auth::user()->role === 'pengguna')
                 <li class="nav-item"><a href="{{ route('user.dashboard') }}" class="nav-link">Dashboard</a></li>
+                <li class="nav-item"><a href="{{ route('logout') }}" class="nav-link">Logout</a></li>
               @endif
             @endauth
           </ul>
