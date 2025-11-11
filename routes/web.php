@@ -18,7 +18,7 @@ use App\Http\Controllers\BorrowController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 // Auth Routes
