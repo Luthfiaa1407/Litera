@@ -9,17 +9,13 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Tampilkan halaman register.
-     */
+    /* Tampilkan halaman registrasi */
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    /**
-     * Proses registrasi pengguna baru.
-     */
+    /* Proses registrasi pengguna baru */
     public function register(Request $request)
     {
         $request->validate([
@@ -32,23 +28,19 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'pengguna', // default role
+            'role' => 'pengguna',
         ]);
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
     }
 
-    /**
-     * Tampilkan halaman login.
-     */
+    /* Tampilkan halaman login */
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    /**
-     * Proses login pengguna.
-     */
+    /* Proses login pengguna */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -56,13 +48,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        // Coba login menggunakan Auth bawaan Laravel
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
             $user = Auth::user();
 
-            // Arahkan sesuai role
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang, Admin!');
             } else {
@@ -70,15 +59,12 @@ class AuthController extends Controller
             }
         }
 
-        // Jika gagal login
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ])->withInput();
     }
 
-    /**
-     * Logout pengguna.
-     */
+    /* Logout pengguna dari sistem */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -89,12 +75,8 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Berhasil logout.');
     }
 
-
-
-    /**
-     * Tampilkan semua user (admin only)
-     */
-    public function adminUsersIndex()
+    /* Tampilkan daftar user (khusus admin) */
+     public function adminUsersIndex()
     {
         try {
             if (!Auth::check() || Auth::user()->role !== 'admin') {
@@ -104,7 +86,7 @@ class AuthController extends Controller
             $users = User::where('id', '!=', Auth::id())->latest()->get();
             return view('admin.users.index', compact('users'));
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal memuat data user: ' . $e->getMessage()]);
+            return back()->with('error', 'Gagal memuat data user: ' . $e->getMessage());
         }
     }
 
@@ -144,10 +126,12 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
 
-            return redirect()->route('admin.users.index')
+            // FIX: Redirect ke CREATE dengan success message
+            return redirect()->route('admin.user.create')
                 ->with('success', 'User berhasil ditambahkan!');
+                
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal menambah user: ' . $e->getMessage()])
+            return back()->with('error', 'Gagal menambah user: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -194,10 +178,12 @@ class AuthController extends Controller
 
             $user->update($data);
 
-            return redirect()->route('admin.users.index')
+            // FIX: Redirect ke EDIT dengan success message  
+            return redirect()->route('admin.user.edit', $user->id)
                 ->with('success', 'User berhasil diupdate!');
+                
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal update user: ' . $e->getMessage()])
+            return back()->with('error', 'Gagal update user: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -214,15 +200,17 @@ class AuthController extends Controller
 
             // Cek jika user mencoba menghapus diri sendiri
             if ($user->id == Auth::id()) {
-                return back()->withErrors(['error' => 'Tidak dapat menghapus akun sendiri!']);
+                return back()->with('error', 'Tidak dapat menghapus akun sendiri!');
             }
 
             $user->delete();
 
-            return redirect()->route('admin.users.index')
+            // FIX: Pastikan route name benar
+            return redirect()->route('admin.user.index')
                 ->with('success', 'User berhasil dihapus!');
+                
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal menghapus user: ' . $e->getMessage()]);
+            return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());
         }
     }
 }

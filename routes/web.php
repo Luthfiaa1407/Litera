@@ -44,12 +44,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // User Management
     Route::prefix('users')->name('user.')->group(function () {
-        Route::get('/', [AuthController::class, 'adminUsersIndex'])->name('index');
-        Route::get('/create', [AuthController::class, 'adminUsersCreate'])->name('create');
-        Route::post('/store', [AuthController::class, 'adminUsersStore'])->name('store');
-        Route::get('/{user}/edit', [AuthController::class, 'adminUsersEdit'])->name('edit');
-        Route::put('/{user}/update', [AuthController::class, 'adminUsersUpdate'])->name('update');
-        Route::delete('/{user}/delete', [AuthController::class, 'adminUsersDestroy'])->name('destroy');
+    Route::get('/', [AuthController::class, 'adminUsersIndex'])->name('index');
+    Route::get('/create', [AuthController::class, 'adminUsersCreate'])->name('create');
+    Route::post('/store', [AuthController::class, 'adminUsersStore'])->name('store');
+    Route::get('/{user}/edit', [AuthController::class, 'adminUsersEdit'])->name('edit');
+    Route::put('/{user}/update', [AuthController::class, 'adminUsersUpdate'])->name('update');
+    Route::delete('/{user}/delete', [AuthController::class, 'adminUsersDestroy'])->name('destroy');
     });
 });
 
