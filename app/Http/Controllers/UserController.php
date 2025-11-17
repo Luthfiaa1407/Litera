@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -11,7 +11,16 @@ use Illuminate\Validation\Rules;
 class UserController extends Controller
 {
     /**
+     * Dashboard untuk USER (bukan admin)
+     */
+    public function dashboard()
+    {
+        return view('user.dashboard');
+    }
+
+    /**
      * Display a listing of the resource.
+     * Admin: Kelola User
      */
     public function index()
     {
@@ -68,11 +77,11 @@ class UserController extends Controller
         ]);
 
         $user->name = $request->name;
-        
+
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-        
+
         $user->save();
 
         return redirect()->route('admin.user.edit', $user->id)
