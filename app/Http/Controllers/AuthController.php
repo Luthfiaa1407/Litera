@@ -127,7 +127,7 @@ class AuthController extends Controller
             ]);
 
             // FIX: Redirect ke CREATE dengan success message
-            return redirect()->route('admin.user.create')
+            return redirect()->route('admin.users.create')
                 ->with('success', 'User berhasil ditambahkan!');
                 
         } catch (\Exception $e) {
@@ -179,7 +179,7 @@ class AuthController extends Controller
             $user->update($data);
 
             // FIX: Redirect ke EDIT dengan success message  
-            return redirect()->route('admin.user.edit', $user->id)
+            return redirect()->route('admin.users.edit', $user->id)
                 ->with('success', 'User berhasil diupdate!');
                 
         } catch (\Exception $e) {
@@ -206,7 +206,7 @@ class AuthController extends Controller
             $user->delete();
 
             // FIX: Pastikan route name benar
-            return redirect()->route('admin.user.index')
+            return redirect()->route('admin.users.index')
                 ->with('success', 'User berhasil dihapus!');
                 
         } catch (\Exception $e) {

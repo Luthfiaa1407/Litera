@@ -10,7 +10,7 @@
                         <h3 style="color: #8B4513;">
                             <i class="fas fa-edit me-2"></i>Edit User
                         </h3>
-                        <a href="{{ route('admin.user.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -25,7 +25,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.user.update', $user->id) }}" method="POST">
+                    <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -142,7 +142,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ route('admin.user.index') }}" class="btn btn-outline-secondary me-md-2">
+                            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary me-md-2">
                                 <i class="fas fa-times me-1"></i>Batal
                             </a>
                             <button type="submit" class="btn" style="background-color: #8B4513; color: white;">

@@ -6,6 +6,17 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BorrowController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -14,8 +25,10 @@ Route::get('/', function () {
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
+// ✅ FIXED: Added name for POST login route
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
@@ -24,7 +37,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // Borrow Management
-    Route::prefix('borrows')->name('borrows')->group(function () {
+    Route::prefix('borrows')->name('borrows.')->group(function () {
         Route::get('/pending', [BorrowController::class, 'pendingRequests'])->name('pending');
         Route::post('/{borrow}/approve', [BorrowController::class, 'approve'])->name('approve');
         Route::post('/{borrow}/reject', [BorrowController::class, 'reject'])->name('reject');
@@ -33,7 +46,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     // Admin User Management
-    Route::prefix('users')->name('user.')->group(function () {
+    Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [AuthController::class, 'adminUsersIndex'])->name('index');
         Route::get('/create', [AuthController::class, 'adminUsersCreate'])->name('create');
         Route::post('/store', [AuthController::class, 'adminUsersStore'])->name('store');

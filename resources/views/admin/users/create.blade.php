@@ -10,7 +10,7 @@
                         <h3 style="color: #8B4513;">
                             <i class="fas fa-user-plus me-2"></i>Tambah User Baru
                         </h3>
-                        <a href="{{ route('admin.user.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -24,7 +24,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.user.store') }}" method="POST" id="createUserForm">
+                    <form action="{{ route('admin.users.store') }}" method="POST" id="createUserForm">
                         @csrf
                         
                         <div class="row">

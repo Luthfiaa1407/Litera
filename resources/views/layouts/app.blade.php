@@ -55,7 +55,7 @@
               @if(Auth::user()->role === 'admin')
                 <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link">Dashboard</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Pending Request</a></li>
-                <li class="nav-item"><a href="{{ route('admin.user.index') }}" class="nav-link">Kelola User</a></li>
+                <li class="nav-item"><a href="{{ route('admin.users.index') }}" class="nav-link">Kelola User</a></li>
                 <li class="nav-item"><a href="admin.books.index" class="nav-link">Kelola Buku</a></li>
                 <li class="nav-item"><a href="{{ route('logout') }}" class="nav-link">Logout</a></li>
               @elseif(Auth::user()->role === 'pengguna')

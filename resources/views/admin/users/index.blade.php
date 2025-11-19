@@ -8,7 +8,7 @@
                 <h1 style="color: #8B4513;">
                     <i class="fas fa-users me-2"></i>Kelola Pengguna
                 </h1>
-                <a href="{{ route('admin.user.create') }}" class="btn" style="background-color: #8B4513; color: white;">
+                <a href="{{ route('admin.users.create') }}" class="btn" style="background-color: #8B4513; color: white;">
                     <i class="fas fa-plus me-1"></i>Tambah User
                 </a>
             </div>
@@ -75,7 +75,7 @@
                                 <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('admin.user.edit', $user->id) }}" 
+                                        <a href="{{ route('admin.users.edit', $user->id) }}" 
                                            class="btn btn-outline-primary" 
                                            title="Edit User">
                                             <i class="fas fa-edit"></i>
@@ -127,7 +127,7 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                    <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger">
@@ -150,7 +150,7 @@
                     <i class="fas fa-users fa-3x text-muted mb-3"></i>
                     <h4 class="text-muted">Belum ada user terdaftar</h4>
                     <p class="text-muted">Mulai dengan menambahkan user baru</p>
-                    <a href="{{ route('admin.user.create') }}" class="btn" style="background-color: #8B4513; color: white;">
+                    <a href="{{ route('admin.users.create') }}" class="btn" style="background-color: #8B4513; color: white;">
                         <i class="fas fa-plus me-1"></i>Tambah User Pertama
                     </a>
                 </div>
