@@ -15,14 +15,14 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        // Jika bukan admin, tolak akses
+        // Jika bukan admin
         if (Auth::user()->role !== 'admin') {
-            return redirect()->route('dashboard')->withErrors([
+            return redirect()->route('user.dashboard')->withErrors([
                 'error' => 'Akses ditolak. Anda bukan admin.'
             ]);
         }
 
-        // Jika admin, lanjutkan request
+        // Jika admin, lanjutkan
         return $next($request);
     }
 }

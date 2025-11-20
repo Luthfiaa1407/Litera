@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BorrowController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{user}/update', [AuthController::class, 'adminUsersUpdate'])->name('update');
         Route::delete('/{user}/delete', [AuthController::class, 'adminUsersDestroy'])->name('destroy');
     });
+
+    Route::resource('books', BookController::class);
 });
 
 // User Routes
@@ -68,4 +71,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [BorrowController::class, 'create'])->name('create');
         Route::post('/', [BorrowController::class, 'store'])->name('store');
     });
+
+    // Halaman daftar buku user
+    Route::get('/books', [BookController::class, 'userBooks'])->name('user.books');
+
+    // Halaman detail buku
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+
+    // Proses pinjam buku
+    Route::post('/books/{book}/borrow', [BookController::class, 'borrow'])->name('books.borrow');
+
 });
