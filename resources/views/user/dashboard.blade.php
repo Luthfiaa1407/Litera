@@ -62,7 +62,7 @@
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
-                    <h6>Peminjaman Tersisa</h6>
+                    <h6>Sisa Waktu peminjaman</h6>
                     <h3 class="fw-bold">
                         {{ $days_left !== null ? $days_left . ' Hari' : '-' }}
                     </h3>
