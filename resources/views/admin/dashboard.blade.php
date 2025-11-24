@@ -14,7 +14,7 @@
     <!-- Quick Stats -->
     <div class="row">
 
-        <!-- Belum Disetujui -->
+        <!-- Pending -->
         <div class="col-md-2 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <!-- Sudah Dikembalikan -->
+        <!-- Kembali -->
         <div class="col-md-2 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <!-- User Terdaftar -->
+        <!-- Users -->
         <div class="col-md-2 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <!-- ✅ KELOLA BUKU -->
+        <!-- KELOLA BUKU -->
         <div class="col-md-2 mb-3">
             <a href="{{ route('admin.books.index') }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm">
@@ -94,9 +94,24 @@
             </a>
         </div>
 
+        <!-- ✅ KELOLA KATEGORI -->
+        <div class="col-md-2 mb-3">
+            <a href="{{ route('admin.categories.index') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-tags fa-2x" style="color: #8B4513;"></i>
+                        </div>
+                        <h3 class="card-title" style="color: #8B4513;">Kelola</h3>
+                        <p class="card-text" style="color: #8B4513;">Kategori</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
 
-    <!-- Riwayat Peminjaman Terbaru -->
+    <!-- Riwayat -->
     <div class="mt-5">
         <h4 class="fw-bold" style="color: #8B4513;">Riwayat Peminjaman Terbaru</h4>
         <div class="card border-0 shadow-sm mt-3">

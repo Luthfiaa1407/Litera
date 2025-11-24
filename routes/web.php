@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BorrowController;
@@ -57,6 +58,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::resource('books', BookController::class);
+    Route::resource('categories', CategoryController::class);
 });
 
 // User Routes
