@@ -62,7 +62,7 @@
                 <li class="nav-item"><a href="{{ route('user.dashboard') }}" class="nav-link">Dashboard</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Kategori</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">Peminjaman</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Profile</a></li>
+                <li class="nav-item"><a href="{{ route('user.profile.index') }}" class="nav-link">Profile</a></li>
               @endif
             @endauth
           </ul>

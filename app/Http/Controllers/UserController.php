@@ -2,157 +2,130 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use App\Models\Book;
+use App\Models\Borrow;
 
 class UserController extends Controller
 {
-    /**
-     * Dashboard untuk USER (pengguna biasa)
-     */
     public function dashboard()
-{
-    $user = auth()->user();
-
-    // ambil peminjaman aktif user (status sesuai yang kamu pakai: 'active' atau 'dipinjam')
-    // sesuaikan 'active' dengan value status di tabel kamu; saya gunakan 'active' dan 'dipinjam' sebagai fallback
-    $activeBorrows = $user->borrowings()
-        ->whereIn('status', ['active', 'dipinjam'])
-        ->with('book')
-        ->get();
-
-    // hitung sisa hari paling dekat (menggunakan kolom return_date)
-    $days_left = null;
-    if ($activeBorrows->isNotEmpty()) {
-        // ambil peminjaman dengan return_date paling dekat ke sekarang (future / past)
-        $nearest = $activeBorrows->filter(function($b) {
-            return !is_null($b->return_date);
-        })->sortBy(function($b) {
-            return $b->return_date;
-        })->first();
-
-        if ($nearest && $nearest->return_date) {
-            $returnDate = \Carbon\Carbon::parse($nearest->return_date);
-            // diffInDays dengan signed result (negatif kalau lewat)
-            $days_left = now()->diffInDays($returnDate, false);
-            // kalau mau selalu non-negatif: $days_left = max(0, $days_left);
-        }
-    }
-
-    // total buku (model Book)
-    $books_count = \App\Models\Book::count();
-
-    // buku tersedia (sesuaikan kondisi kolom yang kamu pakai untuk ketersediaan)
-    // contoh: ambil buku yang stok > 0 atau yang tidak sedang dipinjam
-    // jika kamu tidak punya kolom stok, pakai all()->take(6)
-    $available_books = \App\Models\Book::where(function($q){
-            if (\Schema::hasColumn('books', 'stock')) {
-                $q->where('stock', '>', 0);
+    {
+        try {
+            $user = Auth::user();
+            
+            // Pastikan user sudah login
+            if (!$user) {
+                return redirect()->route('login');
             }
-        })->take(6)->get();
 
-    return view('user.dashboard', [
-        'user' => $user,
-        'active_borrows' => $activeBorrows,
-        'days_left' => $days_left,
-        'books_count' => $books_count,
-        'available_books' => $available_books,
-    ]);
+            // Ambil data peminjaman aktif user
+            $active_borrows = $user->borrowings()
+                ->whereIn('status', ['active', 'dipinjam'])
+                ->with('book')
+                ->get();
+
+            // Hitung sisa hari peminjaman
+            $days_left = null;
+            if ($active_borrows->isNotEmpty()) {
+                $nearest = $active_borrows->filter(function($b) {
+                    return !is_null($b->return_date);
+                })->sortBy('return_date')->first();
+
+                if ($nearest && $nearest->return_date) {
+                    $returnDate = \Carbon\Carbon::parse($nearest->return_date);
+                    $days_left = now()->diffInDays($returnDate, false);
+                    // Jika sudah lewat, set ke 0
+                    if ($days_left < 0) {
+                        $days_left = 0;
+                    }
+                }
+            }
+
+            // Total buku
+            $books_count = Book::count();
+
+            // Buku tersedia
+            $available_books = Book::where('stock', '>', 0)->take(6)->get();
+
+            return view('user.dashboard', compact(
+                'user',
+                'active_borrows',
+                'days_left',
+                'books_count',
+                'available_books'
+            ));
+
+        } catch (\Exception $e) {
+            // Fallback jika ada error
+            return view('user.dashboard', [
+                'user' => Auth::user(),
+                'active_borrows' => collect(),
+                'days_left' => null,
+                'books_count' => 0,
+                'available_books' => collect(),
+            ])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function showProfile()
+    {
+        $user = Auth::user();
+        return view('user.profile.index', compact('user'));
+    }
+
+    public function editProfile()
+{
+    $user = Auth::user();
+    return view('user.profile.edit', compact('user'));
 }
-
-    /**
-     * ADMIN - Tampilkan semua user
-     */
-    public function index()
+    public function updateProfile(Request $request)
     {
-        $users = User::latest()->get();
-        return view('admin.user.index', compact('users'));
-    }
+        $user = Auth::user();
 
-    /**
-     * ADMIN - Form tambah user
-     */
-    public function create()
-    {
-        return view('admin.user.create');
-    }
-
-    /**
-     * ADMIN - Simpan user baru
-     */
-    public function store(Request $request)
-    {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone'    => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role'     => ['required', 'in:admin,pengguna'],
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
         ]);
 
-        User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'password' => Hash::make($request->password),
-            'role'     => $request->role,
-        ]);
+        try {
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
 
-        return redirect()->route('admin.user.index')
-            ->with('success', 'User berhasil ditambahkan!');
+            return redirect()->route('user.profile.index')
+                ->with('success', 'Profile berhasil diperbarui!');
+                
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui profile: ' . $e->getMessage());
+        }
     }
-
-    /**
-     * ADMIN - Form edit user
-     */
-    public function edit(User $user)
+    public function updatePassword(Request $request)
     {
-        return view('admin.user.edit', compact('user'));
-    }
+        $user = Auth::user();
 
-    /**
-     * ADMIN - Update user
-     */
-    public function update(Request $request, User $user)
-    {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'phone'    => ['nullable', 'string', 'max:20'],
-            'role'     => ['required', 'in:admin,pengguna'],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user->name = $request->name;
-        $user->phone = $request->phone;
-        $user->role = $request->role;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+        // Cek password saat ini
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
-        $user->save();
+        try {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
 
-        return redirect()->route('admin.user.edit', $user->id)
-            ->with('success', 'User berhasil diupdate!');
-    }
-
-    /**
-     * ADMIN - Hapus user
-     */
-    public function destroy(User $user)
-    {
-        if ($user->id == auth()->id()) {
-            return redirect()->route('admin.user.index')
-                ->with('error', 'Anda tidak dapat menghapus akun sendiri!');
+            return redirect()->route('user.profile.index')
+                ->with('success', 'Password berhasil diperbarui!');
+                
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui password: ' . $e->getMessage());
         }
-
-        $name = $user->name;
-        $user->delete();
-
-        return redirect()->route('admin.user.index')
-            ->with('success', "User '$name' berhasil dihapus!");
     }
 }

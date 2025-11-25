@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\BookController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BorrowController;
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +27,6 @@ Route::get('/', function () {
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
-// ✅ FIXED: Added name for POST login route
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
@@ -57,8 +56,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/{user}/delete', [AuthController::class, 'adminUsersDestroy'])->name('destroy');
     });
 
-    Route::resource('books', BookController::class);
-    Route::resource('categories', CategoryController::class);
+    Route::prefix('books')->name('books.')->group(function () {
+        Route::get('/', [BookController::class, 'index'])->name('index');
+        Route::get('/create', [BookController::class, 'create'])->name('create');
+        Route::post('/', [BookController::class, 'store'])->name('store');
+        Route::get('/{book}/edit', [BookController::class, 'edit'])->name('edit');
+        Route::put('/{book}/update', [BookController::class, 'update'])->name('update');
+        Route::delete('/{book}/delete', [BookController::class, 'destroy'])->name('destroy');
+        Route::get('/{book}', [BookController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('categories')->name('categories.')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('index');
+        Route::get('/create', [CategoryController::class, 'create'])->name('create');
+        Route::post('/', [CategoryController::class, 'store'])->name('store');
+        Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category}/update', [CategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}/delete', [CategoryController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // User Routes
@@ -74,13 +89,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [BorrowController::class, 'store'])->name('store');
     });
 
-    // Halaman daftar buku user
-    Route::get('/books', [BookController::class, 'userBooks'])->name('user.books');
-
-    // Halaman detail buku
-    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
-
-    // Proses pinjam buku
-    Route::post('/books/{book}/borrow', [BookController::class, 'borrow'])->name('books.borrow');
-
+    Route::prefix('user/profile')->name('user.profile.')->group(function () {
+        Route::get('/', [UserController::class, 'showProfile'])->name('index');
+        Route::get('/edit', [UserController::class, 'editProfile'])->name('edit');
+        Route::put('/update', [UserController::class, 'updateProfile'])->name('update');
+        Route::put('/update-password', [UserController::class, 'updatePassword'])->name('update-password');
+    });
 });

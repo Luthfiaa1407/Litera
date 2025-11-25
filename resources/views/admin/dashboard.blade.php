@@ -8,13 +8,12 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold" style="color: #8B4513;">Dashboard Admin</h2>
-        <a href="{{ route('logout') }}" class="btn btn-danger">Logout</a>
     </div>
 
     <!-- Quick Stats -->
     <div class="row">
 
-        <!-- Pending -->
+        <!-- Pending Requests -->
         <div class="col-md-2 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
@@ -22,12 +21,12 @@
                         <i class="fas fa-hourglass-half fa-2x" style="color: #8B4513;"></i>
                     </div>
                     <h3 class="card-title" style="color: #8B4513;">Pending</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $pending_count ?? 0 }}</p>
+                    <p class="card-text" style="color: #8B4513;">{{ $pendingRequests ?? 0 }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Dipinjam -->
+        <!-- Active Borrows -->
         <div class="col-md-2 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
@@ -35,20 +34,20 @@
                         <i class="fas fa-book-reader fa-2x" style="color: #8B4513;"></i>
                     </div>
                     <h3 class="card-title" style="color: #8B4513;">Dipinjam</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $borrowed_count ?? 0 }}</p>
+                    <p class="card-text" style="color: #8B4513;">{{ $activeBorrows ?? 0 }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Kembali -->
+        <!-- Approved Requests -->
         <div class="col-md-2 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
                     <div class="mb-3">
                         <i class="fas fa-check-circle fa-2x" style="color: #8B4513;"></i>
                     </div>
-                    <h3 class="card-title" style="color: #8B4513;">Kembali</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $returned_count ?? 0 }}</p>
+                    <h3 class="card-title" style="color: #8B4513;">Disetujui</h3>
+                    <p class="card-text" style="color: #8B4513;">{{ $approvedRequests ?? 0 }}</p>
                 </div>
             </div>
         </div>
@@ -61,7 +60,7 @@
                         <i class="fas fa-users fa-2x" style="color: #8B4513;"></i>
                     </div>
                     <h3 class="card-title" style="color: #8B4513;">Users</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $users_count ?? 0 }}</p>
+                    <p class="card-text" style="color: #8B4513;">{{ $totalUsers ?? 0 }}</p>
                 </div>
             </div>
         </div>
@@ -74,27 +73,11 @@
                         <i class="fas fa-book fa-2x" style="color: #8B4513;"></i>
                     </div>
                     <h3 class="card-title" style="color: #8B4513;">Total Buku</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $books_count ?? 0 }}</p>
+                    <p class="card-text" style="color: #8B4513;">{{ $totalBooks ?? 0 }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- KELOLA BUKU -->
-        <div class="col-md-2 mb-3">
-            <a href="{{ route('admin.books.index') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-book-open fa-2x" style="color: #8B4513;"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #8B4513;">Kelola</h3>
-                        <p class="card-text" style="color: #8B4513;">Buku</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- ✅ KELOLA KATEGORI -->
         <div class="col-md-2 mb-3">
             <a href="{{ route('admin.categories.index') }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm">
@@ -111,35 +94,60 @@
 
     </div>
 
-    <!-- Riwayat -->
+    <!-- Pending Approvals -->
+    @if(isset($pendingApprovals) && $pendingApprovals->count() > 0)
+    <div class="mt-4">
+        <div class="alert alert-warning">
+            <h5 class="alert-heading">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Peringatan: Ada {{ $pendingApprovals->count() }} permohonan peminjaman yang menunggu persetujuan!
+            </h5>
+            <a href="{{ route('admin.borrows.pending') }}" class="btn btn-warning btn-sm mt-2">
+                <i class="fas fa-list me-1"></i>Lihat Permohonan Pending
+            </a>
+        </div>
+    </div>
+    @endif
+
+    <!-- Riwayat Aktivitas Terbaru -->
     <div class="mt-5">
-        <h4 class="fw-bold" style="color: #8B4513;">Riwayat Peminjaman Terbaru</h4>
+        <h4 class="fw-bold" style="color: #8B4513;">Aktivitas Terbaru</h4>
         <div class="card border-0 shadow-sm mt-3">
             <div class="card-body">
 
-                @if(isset($recent_borrows) && count($recent_borrows) > 0)
+                @if(isset($recentActivities) && $recentActivities->count() > 0)
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Peminjam</th>
                                 <th>Buku</th>
                                 <th>Status</th>
-                                <th>Tanggal Pinjam</th>
+                                <th>Tanggal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recent_borrows as $borrow)
+                            @foreach($recentActivities as $activity)
                             <tr>
-                                <td>{{ $borrow->user->name }}</td>
-                                <td>{{ $borrow->book->title }}</td>
-                                <td>{{ ucfirst($borrow->status) }}</td>
-                                <td>{{ $borrow->created_at->format('d M Y') }}</td>
+                                <td>{{ $activity->user->name ?? 'N/A' }}</td>
+                                <td>{{ $activity->book->title ?? 'N/A' }}</td>
+                                <td>
+                                    <span class="badge 
+                                        @if($activity->status == 'pending') bg-warning
+                                        @elseif($activity->status == 'active') bg-primary
+                                        @elseif($activity->status == 'approved') bg-info
+                                        @elseif($activity->status == 'returned') bg-success
+                                        @elseif($activity->status == 'rejected') bg-danger
+                                        @else bg-secondary @endif">
+                                        {{ ucfirst($activity->status) }}
+                                    </span>
+                                </td>
+                                <td>{{ $activity->created_at->format('d M Y H:i') }}</td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 @else
-                    <p class="text-muted">Belum ada peminjaman terbaru.</p>
+                    <p class="text-muted">Belum ada aktivitas terbaru.</p>
                 @endif
 
             </div>
