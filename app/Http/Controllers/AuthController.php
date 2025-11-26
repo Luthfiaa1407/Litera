@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OtpEmail;
+use App\Models\EmailVerification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -19,8 +22,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
         ]);
 
@@ -31,7 +34,25 @@ class AuthController extends Controller
             'role' => 'pengguna',
         ]);
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+        // Buat OTP
+        $otp = rand(100000, 999999);
+
+        EmailVerification::create([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'otp' => $otp,
+            'status' => 'active',
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        // Simpan session
+        session(['otp_email' => $user->email]);
+
+        // Kirim OTP
+        Mail::to($user->email)->send(new OtpEmail($otp));
+
+        return redirect()->route('verify.otp.form')
+            ->with('success', 'Registrasi berhasil. Cek email untuk OTP!');
     }
 
     /* Tampilkan halaman login */
@@ -76,17 +97,18 @@ class AuthController extends Controller
     }
 
     /* Tampilkan daftar user (khusus admin) */
-     public function adminUsersIndex()
+    public function adminUsersIndex()
     {
         try {
-            if (!Auth::check() || Auth::user()->role !== 'admin') {
+            if (! Auth::check() || Auth::user()->role !== 'admin') {
                 abort(403);
             }
 
             $users = User::where('id', '!=', Auth::id())->latest()->get();
+
             return view('admin.users.index', compact('users'));
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memuat data user: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memuat data user: '.$e->getMessage());
         }
     }
 
@@ -95,7 +117,7 @@ class AuthController extends Controller
      */
     public function adminUsersCreate()
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (! Auth::check() || Auth::user()->role !== 'admin') {
             abort(403);
         }
 
@@ -108,7 +130,7 @@ class AuthController extends Controller
     public function adminUsersStore(Request $request)
     {
         try {
-            if (!Auth::check() || Auth::user()->role !== 'admin') {
+            if (! Auth::check() || Auth::user()->role !== 'admin') {
                 abort(403);
             }
 
@@ -129,9 +151,9 @@ class AuthController extends Controller
             // FIX: Redirect ke CREATE dengan success message
             return redirect()->route('admin.users.create')
                 ->with('success', 'User berhasil ditambahkan!');
-                
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menambah user: ' . $e->getMessage())
+            return back()->with('error', 'Gagal menambah user: '.$e->getMessage())
                 ->withInput();
         }
     }
@@ -141,7 +163,7 @@ class AuthController extends Controller
      */
     public function adminUsersEdit(User $user)
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (! Auth::check() || Auth::user()->role !== 'admin') {
             abort(403);
         }
 
@@ -154,13 +176,13 @@ class AuthController extends Controller
     public function adminUsersUpdate(Request $request, User $user)
     {
         try {
-            if (!Auth::check() || Auth::user()->role !== 'admin') {
+            if (! Auth::check() || Auth::user()->role !== 'admin') {
                 abort(403);
             }
 
             $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
+                'email' => 'required|email|unique:users,email,'.$user->id,
                 'password' => 'nullable|string|min:6|confirmed',
                 'role' => 'required|in:admin,pengguna',
             ]);
@@ -178,12 +200,12 @@ class AuthController extends Controller
 
             $user->update($data);
 
-            // FIX: Redirect ke EDIT dengan success message  
+            // FIX: Redirect ke EDIT dengan success message
             return redirect()->route('admin.users.edit', $user->id)
                 ->with('success', 'User berhasil diupdate!');
-                
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal update user: ' . $e->getMessage())
+            return back()->with('error', 'Gagal update user: '.$e->getMessage())
                 ->withInput();
         }
     }
@@ -194,7 +216,7 @@ class AuthController extends Controller
     public function adminUsersDestroy(User $user)
     {
         try {
-            if (!Auth::check() || Auth::user()->role !== 'admin') {
+            if (! Auth::check() || Auth::user()->role !== 'admin') {
                 abort(403);
             }
 
@@ -208,9 +230,45 @@ class AuthController extends Controller
             // FIX: Pastikan route name benar
             return redirect()->route('admin.users.index')
                 ->with('success', 'User berhasil dihapus!');
-                
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus user: '.$e->getMessage());
         }
+    }
+
+    public function showVerifyOtpForm()
+    {
+        return view('auth.verify-otp');
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            return back()->with('error', 'Email tidak ditemukan.');
+        }
+
+        if ($user->otp !== $request->otp) {
+            return back()->with('error', 'OTP salah.');
+        }
+
+        if ($user->otp_expires_at < now()) {
+            return back()->with('error', 'OTP sudah kadaluarsa.');
+        }
+
+        // Verifikasi berhasil
+        $user->update([
+            'is_verified' => true,
+            'otp' => null,
+            'otp_expires_at' => null,
+        ]);
+
+        return redirect()->route('login')->with('success', 'Verifikasi berhasil! Silakan login.');
     }
 }
