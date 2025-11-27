@@ -1,114 +1,84 @@
 @extends('layouts.app')
 
 @section('content')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<div class="min-h-screen" style="background-color: #FDFCF7;">
+    <!-- Header -->
+    <div class="border-b" style="border-color: #D9D7CB; background-color: #FDFCF7;">
+        <div class="max-w-4xl mx-auto px-6 py-8 lg:px-8">
+            <a href="{{ route('user.profile.index') }}" class="inline-block mb-4 text-sm font-semibold" style="color: #C8C5BC;">
+                ← Kembali
+            </a>
+            <h1 class="text-4xl font-black" style="color: #1a1a1a;">Edit Profil</h1>
+        </div>
+    </div>
 
-<style>
-    body {
-        background-color: #f5f3f0;
-        font-family: 'Georgia', serif;
-    }
-    .profile-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        border-top: 5px solid #8B4513;
-        overflow: hidden;
-    }
-    .profile-header {
-        background: linear-gradient(135deg, #8B4513, #A0522D);
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
-    }
-    .btn-primary {
-        background-color: #8B4513;
-        border-color: #8B4513;
-    }
-    .btn-primary:hover {
-        background-color: #6d3b0f;
-        border-color: #6d3b0f;
-    }
-    .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-    .form-control:focus {
-        border-color: #8B4513;
-        box-shadow: 0 0 0 0.2rem rgba(139,69,19,0.15);
-    }
-</style>
-
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="profile-card">
-                <!-- Header -->
-                <div class="profile-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-edit me-2"></i>Edit Profile
-                    </h4>
-                </div>
-
-                <!-- Form Edit Profile -->
-                <div class="p-4">
-                    <!-- Notifications -->
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    <!-- Back Button -->
-                    <div class="mb-4">
-                        <a href="{{ route('user.profile.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Kembali
-                        </a>
-                    </div>
-
-                    <!-- Edit Profile Form -->
-                    <form method="POST" action="{{ route('user.profile.update') }}">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" value="{{ old('name', $user->name) }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" name="email" value="{{ old('email', $user->email) }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Simpan Perubahan
-                            </button>
-                        </div>
-                    </form>
-                </div>
+    <div class="max-w-4xl mx-auto px-6 py-12 lg:px-8">
+        <!-- Edit Form Card -->
+        <div style="background-color: #FDFCF7; border: 2px solid #D9D7CB;" class="rounded-lg p-12">
+            
+            <!-- Notifications -->
+            @if(session('success'))
+            <div class="mb-6 p-4 rounded-lg" style="background-color: #D9D7CB; color: #1a1a1a;">
+                <p class="font-semibold">✓ {{ session('success') }}</p>
             </div>
+            @endif
+
+            @if(session('error'))
+            <div class="mb-6 p-4 rounded-lg" style="background-color: #D9D7CB; color: #1a1a1a;">
+                <p class="font-semibold">✕ {{ session('error') }}</p>
+            </div>
+            @endif
+
+            <!-- Form -->
+            <form method="POST" action="{{ route('user.profile.update') }}" class="space-y-8">
+                @csrf
+                @method('PUT')
+                
+                <!-- Full Name Field -->
+                <div>
+                    <label for="name" class="block text-xs font-semibold mb-3" style="color: #C8C5BC;">
+                        NAMA LENGKAP
+                    </label>
+                    <input type="text" id="name" name="name" 
+                           value="{{ old('name', $user->name) }}" 
+                           required
+                           class="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none"
+                           style="border-color: #D9D7CB; background-color: #FDFCF7; color: #1a1a1a;"
+                           @error('name') style="border-color: #ff6b6b;" @enderror>
+                    @error('name')
+                    <p class="mt-2 text-sm" style="color: #ff6b6b;">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-xs font-semibold mb-3" style="color: #C8C5BC;">
+                        EMAIL
+                    </label>
+                    <input type="email" id="email" name="email" 
+                           value="{{ old('email', $user->email) }}" 
+                           required
+                           class="w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none"
+                           style="border-color: #D9D7CB; background-color: #FDFCF7; color: #1a1a1a;"
+                           @error('email') style="border-color: #ff6b6b;" @enderror>
+                    @error('email')
+                    <p class="mt-2 text-sm" style="color: #ff6b6b;">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-4 pt-6" style="border-top: 2px solid #D9D7CB;">
+                    <button type="submit" class="flex-1 py-4 font-bold rounded-lg transition-all"
+                            style="background-color: #C8C5BC; color: #FDFCF7;">
+                        Simpan Perubahan
+                    </button>
+                    <a href="{{ route('user.profile.index') }}" class="flex-1 py-4 font-bold text-center rounded-lg border-2 transition-all"
+                       style="border-color: #C8C5BC; color: #C8C5BC;">
+                        Batal
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 @endsection
