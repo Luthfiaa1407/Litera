@@ -1,183 +1,200 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Litera</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Georgia', serif;
-            background-color: #f5f3f0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
-
-        .register-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-            padding: 2rem 2.5rem;
-            width: 100%;
-            max-width: 520px;
-            border-top: 4px solid #8B4513;
-        }
-
-        .brand {
-            text-align: center;
-            color: #8B4513;
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-        }
-
-        h4 {
-            text-align: center;
-            color: #8B4513;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #5a4634;
-        }
-
-        .form-control {
-            border: 1px solid #d4c4b8;
-            padding: 0.7rem;
-        }
-
-        .form-control:focus {
-            border-color: #8B4513;
-            box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.15);
-        }
-
-        .btn-register {
-            background-color: #8B4513;
-            color: white;
-            font-weight: 600;
-            border: none;
-            padding: 0.75rem;
-            transition: 0.3s;
-        }
-
-        .btn-register:hover {
-            background-color: #6f3b10;
-        }
-
-        .register-footer {
-            text-align: center;
-            margin-top: 1.2rem;
-            font-size: 0.95rem;
-        }
-
-        .register-footer a {
-            color: #8B4513;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .register-footer a:hover {
-            text-decoration: underline;
-        }
-
-        .alert {
-            border-radius: 6px;
-            border: none;
-        }
-
-        .password-requirements {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 0.2rem;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body>
-    <div class="register-card">
-        <div class="brand"><i class="fas fa-book me-2"></i>Litera</div>
-        <h4>Daftar Akun Baru</h4>
+<body class="min-h-screen flex items-center justify-center p-4 py-8"
+    style="background: linear-gradient(135deg, #FDFCF7 0%, #D9D7CB 100%);">
+    <!-- Decorative elements -->
+    <div class="fixed top-0 right-0 w-96 h-96 rounded-full opacity-20"
+        style="background: #C8C5BC; filter: blur(60px); pointer-events: none;"></div>
+    <div class="fixed bottom-0 left-0 w-80 h-80 rounded-full opacity-15"
+        style="background: #C8C5BC; filter: blur(50px); pointer-events: none;"></div>
 
-        <!-- Pesan Notifikasi -->
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
+    <div class="w-full max-w-md relative z-10">
+        <!-- Card with dramatic shadow -->
+        <div class="bg-white backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-8 md:p-10 border border-opacity-20"
+            style="border-color: #C8C5BC; box-shadow: 0 20px 60px rgba(0,0,0,0.08);">
 
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <ul class="mb-0 ps-3">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
-            <div class="mb-3">
-                <label for="name" class="form-label">Nama</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama" required>
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+                    style="background: linear-gradient(135deg, #C8C5BC, #D9D7CB);">
+                    <i class="fas fa-book text-white text-2xl"></i>
+                </div>
+                <h1 class="text-4xl font-bold tracking-tight" style="color: #2D2D2D;">Litera</h1>
+                <p class="mt-2 text-sm" style="color: #7F7F7F;">Buat akun baru Anda</p>
             </div>
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="Masukkan email" required>
+            <!-- Alerts -->
+            @if (session('success'))
+                <div
+                    class="mb-4 p-4 rounded-xl bg-green-50 border-l-4 border-green-500 flex items-start gap-3 animate-slideIn">
+                    <i class="fas fa-check-circle text-green-600 mt-0.5"></i>
+                    <span class="text-sm text-green-800">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div
+                    class="mb-4 p-4 rounded-xl bg-red-50 border-l-4 border-red-500 flex items-start gap-3 animate-slideIn">
+                    <i class="fas fa-exclamation-circle text-red-600 mt-0.5"></i>
+                    <span class="text-sm text-red-800">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-4 p-4 rounded-xl bg-red-50 border-l-4 border-red-500 animate-slideIn">
+                    <ul class="space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li class="text-sm text-red-800 flex items-start gap-2">
+                                <i class="fas fa-triangle-exclamation mt-0.5 flex-shrink-0"></i>
+                                <span>{{ $error }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Form -->
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label for="name" class="block text-sm font-semibold mb-2" style="color: #2D2D2D;">Nama
+                        Lengkap</label>
+                    <input type="text" id="name" name="name" value="{{ old('name') }}"
+                        placeholder="Masukkan nama Anda" required
+                        class="w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:scale-105"
+                        style="border-color: #E0DED4; background: #FDFCF7;"
+                        @error('name') style="border-color: #EF4444;" @enderror>
+                    @error('name')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-circle-exclamation text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-semibold mb-2" style="color: #2D2D2D;">Email</label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}"
+                        placeholder="Masukkan email Anda" required
+                        class="w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:scale-105"
+                        style="border-color: #E0DED4; background: #FDFCF7;"
+                        @error('email') style="border-color: #EF4444;" @enderror>
+                    @error('email')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-circle-exclamation text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-semibold mb-2"
+                        style="color: #2D2D2D;">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Minimal 8 karakter" required
+                        class="w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:scale-105"
+                        style="border-color: #E0DED4; background: #FDFCF7;"
+                        @error('password') style="border-color: #EF4444;" @enderror>
+                    <p class="mt-1 text-xs" style="color: #A0A0A0;">
+                        <i class="fas fa-info-circle"></i> Password minimal 8 karakter
+                    </p>
+                    @error('password')
+                        <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+                            <i class="fas fa-circle-exclamation text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="password_confirmation" class="block text-sm font-semibold mb-2"
+                        style="color: #2D2D2D;">Konfirmasi Password</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation"
+                        placeholder="Ulangi password Anda" required
+                        class="w-full px-4 py-3 rounded-xl border-2 transition-all focus:outline-none focus:scale-105"
+                        style="border-color: #E0DED4; background: #FDFCF7;">
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 text-base mt-6"
+                    style="background: linear-gradient(135deg, #C8C5BC, #B5B1A5);">
+                    <i class="fas fa-user-plus"></i> Daftar Sekarang
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="my-6 flex items-center gap-3">
+                <div class="flex-1 h-px" style="background-color: #E0DED4;"></div>
+                <span class="text-xs" style="color: #A0A0A0;">atau</span>
+                <div class="flex-1 h-px" style="background-color: #E0DED4;"></div>
             </div>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Minimal 8 karakter" required>
-                <div class="password-requirements"><small>Password minimal 8 karakter</small></div>
+            <!-- Footer -->
+            <div class="text-center">
+                <p class="text-sm" style="color: #7F7F7F;">Sudah punya akun?
+                    <a href="{{ route('login') }}" class="font-semibold transition-colors hover:underline"
+                        style="color: #C8C5BC;">Login di sini</a>
+                </p>
             </div>
+        </div>
 
-            <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password" required>
-            </div>
-
-            <button type="submit" class="btn btn-register w-100"><i class="fas fa-user-plus me-2"></i>Daftar</button>
-
-            <div class="register-footer mt-3">
-                <p>Sudah punya akun? <a href="{{ route('login') }}">Login di sini</a></p>
-            </div>
-        </form>
+        <!-- Bottom text -->
+        <p class="text-center text-xs mt-8" style="color: #A0A0A0;">© 2025 Litera. Semua hak dilindungi.</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(200, 197, 188, 0.1);
+        }
+
+        @media (max-width: 640px) {
+            body {
+                background: #FDFCF7;
+            }
+        }
+    </style>
+
     <script>
         const password = document.getElementById('password');
         const confirm = document.getElementById('password_confirmation');
 
         confirm.addEventListener('input', function() {
-            this.classList.toggle('is-invalid', password.value !== this.value);
+            if (password.value && this.value && password.value !== this.value) {
+                this.style.borderColor = '#EF4444';
+            } else {
+                this.style.borderColor = '#E0DED4';
+            }
         });
 
         document.querySelector('form').addEventListener('submit', e => {
-            if (password.value !== confirm.value) {
+            if (password.value && confirm.value && password.value !== confirm.value) {
                 e.preventDefault();
                 alert('Password dan konfirmasi password tidak sama!');
             }
         });
     </script>
 </body>
+
 </html>
