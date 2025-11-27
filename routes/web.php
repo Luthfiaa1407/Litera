@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BorrowController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyOtpController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +33,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 Route::get('/verify-otp', [VerifyOtpController::class, 'showVerifyForm'])->name('verify.otp.form');
 Route::post('/verify-otp', [VerifyOtpController::class, 'verify'])->name('verify.otp');
+Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])->name('verify.otp.resend');
+
 
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -81,7 +83,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // User Routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified.email'])->group(function () {
 
     // User Dashboard
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');

@@ -93,9 +93,13 @@
             <!-- Resend OTP -->
             <div class="mt-4 text-center">
                 <p class="text-sm" style="color: #7F7F7F;">
-                    Tidak menerima kode?
+                    {{-- Tidak menerima kode?
                     <a href="#" class="font-semibold transition-colors hover:underline" style="color: #C8C5BC;"
-                        onclick="resendOTP(event)">Kirim ulang</a>
+                        onclick="resendOTP(event)">Kirim ulang</a> --}}
+                <form action="{{ route('verify.otp.resend') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-link">Kirim Ulang OTP</button>
+                </form>
                 </p>
             </div>
         </div>
