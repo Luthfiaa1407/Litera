@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\GoogleBooksController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BorrowController;
@@ -34,7 +35,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/verify-otp', [VerifyOtpController::class, 'showVerifyForm'])->name('verify.otp.form');
 Route::post('/verify-otp', [VerifyOtpController::class, 'verify'])->name('verify.otp');
 Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])->name('verify.otp.resend');
-
 
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -70,6 +70,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{book}/update', [BookController::class, 'update'])->name('update');
         Route::delete('/{book}/delete', [BookController::class, 'destroy'])->name('destroy');
         Route::get('/{book}', [BookController::class, 'show'])->name('show');
+
+        // 🔽 Tambahan untuk Google Books
+        Route::get('/google/search', [GoogleBooksController::class, 'search'])->name('google.search');
+        Route::get('/google/detail/{id}', [GoogleBooksController::class, 'detail'])->name('google.detail');
     });
 
     Route::prefix('categories')->name('categories.')->group(function () {
@@ -80,6 +84,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{category}/update', [CategoryController::class, 'update'])->name('update');
         Route::delete('/{category}/delete', [CategoryController::class, 'destroy'])->name('destroy');
     });
+
 });
 
 // User Routes
@@ -100,5 +105,11 @@ Route::middleware(['auth', 'verified.email'])->group(function () {
         Route::get('/edit', [UserController::class, 'editProfile'])->name('edit');
         Route::put('/update', [UserController::class, 'updateProfile'])->name('update');
         Route::put('/update-password', [UserController::class, 'updatePassword'])->name('update-password');
+    });
+
+    // User Book Routes
+    Route::prefix('user/books')->name('users.books.')->group(function () {
+        Route::get('/', [UserController::class, 'books'])->name('index');
+        Route::get('/{book}', [UserController::class, 'showBook'])->name('show');
     });
 });
