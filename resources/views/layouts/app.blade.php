@@ -10,56 +10,87 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+
     <style>
         * {
             font-family: "Poppins", sans-serif;
-
         }
 
+        /* 🎨 PALET WARNA BARU */
         :root {
-            --color-primary: #C8C5BC;
-            --color-secondary: #D9D7CB;
-            --color-bg: #FDFCF7;
-            --color-text: #333333;
+            --color-primary: #06B6D4;
+            --color-primary-dark: #0891B2;
+            --color-accent: #0891B2;
+            --color-bg: #FFFFFF;
+            --color-light-bg: #F0F9FF;
+
+            --color-text: #1F2937;
+            --color-light-text: #475569;
         }
 
         body {
-            background-color: var(--color-bg);
+            background: var(--color-bg);
             color: var(--color-text);
         }
 
         .nav-link-item {
-            transition: .3s ease;
+            transition: 0.3s ease;
+            position: relative;
+            color: var(--color-primary-dark);
         }
 
         .nav-link-item:hover {
-            transform: translateY(-2px);
             color: var(--color-primary) !important;
+            transform: translateY(-2px);
         }
 
-        /* ACTIVE HIGHLIGHT */
+        .nav-link-item:hover::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: var(--color-primary);
+            border-radius: 2px;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
+        }
+
         .active-bg {
-            background-color: var(--color-secondary) !important;
-            font-weight: 600 !important;
-            border-radius: 10px;
-            padding: 8px 12px !important;
+            background: var(--color-primary);
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+            border-radius: 12px;
+            padding: 8px 14px !important;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(16px);
+            border-bottom: 2px solid var(--color-primary);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.12);
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+            color: #FFFFFF;
+            border-top: 3px solid var(--color-primary);
         }
     </style>
 </head>
 
 <body>
 
-    <header class="border-b-2 border-opacity-30"
-        style="background-color: var(--color-bg); border-color: var(--color-primary);">
+    <header class="glass-header">
         <nav class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
 
                 <!-- Brand -->
-                <div class="text-2xl font-bold">
-                    <i class="fas fa-book mr-2"></i>Litera
+                <div class="text-3xl font-bold flex items-center gap-2" style="color: var(--color-primary-dark);">
+                    <i class="fas fa-book"></i> Litera
                 </div>
 
                 <!-- DESKTOP NAV -->
@@ -72,43 +103,36 @@
                                 Dashboard
                             </a>
 
-                            <a href="#" class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg">
-                                Pending Request
-                            </a>
+                            <a href="#" class="nav-link-item text-sm px-3 py-2">Pending Request</a>
 
                             <a href="{{ route('admin.users.index') }}"
-                                class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                class="nav-link-item text-sm px-3 py-2 rounded-lg
                                 {{ request()->routeIs('admin.users.*') ? 'active-bg' : '' }}">
                                 Kelola User
                             </a>
 
                             <a href="{{ route('admin.books.index') }}"
-                                class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                class="nav-link-item text-sm px-3 py-2 rounded-lg
                                 {{ request()->routeIs('admin.books.*') ? 'active-bg' : '' }}">
                                 Kelola Buku
                             </a>
 
-                            <a href="{{ route('logout') }}" class="nav-link-item text-sm tracking-wide px-4 py-2 rounded-lg"
-                                style="background-color: var(--color-primary);">
+                            <a href="{{ route('logout') }}" class="text-sm tracking-wide px-4 py-2 rounded-lg text-white"
+                                style="background: var(--color-primary-dark); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.2);">
                                 Logout
                             </a>
                         @elseif(Auth::user()->role === 'pengguna')
                             <a href="{{ route('user.dashboard') }}"
-                                class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                class="nav-link-item text-sm px-3 py-2 rounded-lg
                                 {{ request()->routeIs('user.dashboard') ? 'active-bg' : '' }}">
                                 Dashboard
                             </a>
 
-                            <a href="#" class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg">
-                                Kategori
-                            </a>
-
-                            <a href="#" class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg">
-                                Peminjaman
-                            </a>
+                            <a href="#" class="nav-link-item text-sm px-3 py-2">Kategori</a>
+                            <a href="#" class="nav-link-item text-sm px-3 py-2">Peminjaman</a>
 
                             <a href="{{ route('user.profile.index') }}"
-                                class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                class="nav-link-item text-sm px-3 py-2 rounded-lg
                                 {{ request()->routeIs('user.profile.*') ? 'active-bg' : '' }}">
                                 Profile
                             </a>
@@ -117,62 +141,54 @@
                 </div>
 
                 <!-- MOBILE MENU BUTTON -->
-                <button class="md:hidden text-xl" id="mobileMenuBtn">
+                <button class="md:hidden text-xl" id="mobileMenuBtn" style="color: var(--color-primary-dark);">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
 
             <!-- MOBILE NAV -->
             <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 border-t-2 pt-4"
-                style="border-color: var(--color-secondary);">
+                style="border-color: var(--color-primary);">
                 <div class="flex flex-col gap-3">
 
                     @auth
                         @if (Auth::user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}"
-                                class="py-2 px-3 rounded-lg text-sm
-                                {{ request()->routeIs('admin.dashboard') ? 'active-bg' : '' }}">
+                            <a href="{{ route('admin.dashboard') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
                                 Dashboard
                             </a>
 
-                            <a href="#" class="py-2 px-3 rounded-lg text-sm">
-                                Pending Request
-                            </a>
+                            <a href="#" class="py-2 px-3 text-sm" style="color: var(--color-primary-dark);">
+                                Pending Request</a>
 
-                            <a href="{{ route('admin.users.index') }}"
-                                class="py-2 px-3 rounded-lg text-sm
-                                {{ request()->routeIs('admin.users.*') ? 'active-bg' : '' }}">
+                            <a href="{{ route('admin.users.index') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
                                 Kelola User
                             </a>
 
-                            <a href="{{ route('admin.books.index') }}"
-                                class="py-2 px-3 rounded-lg text-sm
-                                {{ request()->routeIs('admin.books.*') ? 'active-bg' : '' }}">
+                            <a href="{{ route('admin.books.index') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
                                 Kelola Buku
                             </a>
 
-                            <a href="{{ route('logout') }}" class="py-2 px-3 rounded-lg text-sm"
-                                style="background-color: var(--color-primary);">
+                            <a href="{{ route('logout') }}" class="py-2 px-3 text-sm text-white rounded-lg"
+                                style="background: var(--color-primary-dark); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.2);">
                                 Logout
                             </a>
                         @elseif(Auth::user()->role === 'pengguna')
-                            <a href="{{ route('user.dashboard') }}"
-                                class="py-2 px-3 rounded-lg text-sm
-                                {{ request()->routeIs('user.dashboard') ? 'active-bg' : '' }}">
+                            <a href="{{ route('user.dashboard') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
                                 Dashboard
                             </a>
 
-                            <a href="#" class="py-2 px-3 rounded-lg text-sm">
-                                Kategori
-                            </a>
+                            <a href="#" class="py-2 px-3 text-sm" style="color: var(--color-primary-dark);">
+                                Kategori</a>
 
-                            <a href="#" class="py-2 px-3 rounded-lg text-sm">
-                                Peminjaman
-                            </a>
+                            <a href="#" class="py-2 px-3 text-sm" style="color: var(--color-primary-dark);">
+                                Peminjaman</a>
 
-                            <a href="{{ route('user.profile.index') }}"
-                                class="py-2 px-3 rounded-lg text-sm
-                                {{ request()->routeIs('user.profile.*') ? 'active-bg' : '' }}">
+                            <a href="{{ route('user.profile.index') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
                                 Profile
                             </a>
                         @endif
@@ -183,15 +199,13 @@
         </nav>
     </header>
 
-    <main class="container mx-auto px-4 py-8 min-h-screen">
+    <main class="mx-auto min-h-screen">
         @yield('content')
     </main>
 
-    <footer class="border-t-2 mt-12" style="border-color: var(--color-primary);">
-        <div class="container mx-auto px-4 text-center py-6">
-            <p class="font-semibold text-sm">
-                © {{ date('Y') }} Litera — All Rights Reserved.
-            </p>
+    <footer class="border-t-2">
+        <div class="container mx-auto px-4 text-center py-6 text-sm font-semibold">
+            © {{ date('Y') }} Litera — All Rights Reserved.
         </div>
     </footer>
 
