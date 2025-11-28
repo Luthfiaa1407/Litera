@@ -103,7 +103,12 @@
                                 Dashboard
                             </a>
 
-                            <a href="#" class="nav-link-item text-sm px-3 py-2">Pending Request</a>
+                            <a href="{{ route('admin.borrows.pending') }}"
+                                class="nav-link-item text-sm px-3 py-2 rounded-lg
+                                {{ request()->routeIs('admin.borrows.*') ? 'active-bg' : '' }}">
+                                Pending Request
+                            </a>
+
 
                             <a href="{{ route('admin.users.index') }}"
                                 class="nav-link-item text-sm px-3 py-2 rounded-lg
@@ -158,8 +163,11 @@
                                 Dashboard
                             </a>
 
-                            <a href="#" class="py-2 px-3 text-sm" style="color: var(--color-primary-dark);">
-                                Pending Request</a>
+                            <a href="{{ route('admin.borrows.pending') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
+                                Pending Request
+                            </a>
+
 
                             <a href="{{ route('admin.users.index') }}" class="py-2 px-3 text-sm"
                                 style="color: var(--color-primary-dark);">

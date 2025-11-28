@@ -5,7 +5,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\GoogleBooksController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BorrowController;
+use App\Http\Controllers\BorrowController; // untuk USER
+use App\Http\Controllers\Admin\BorrowController as AdminBorrowController; // untuk ADMIN
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Route;
@@ -45,12 +46,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Borrow Management
     Route::prefix('borrows')->name('borrows.')->group(function () {
-        Route::get('/pending', [BorrowController::class, 'pendingRequests'])->name('pending');
-        Route::post('/{borrow}/approve', [BorrowController::class, 'approve'])->name('approve');
-        Route::post('/{borrow}/reject', [BorrowController::class, 'reject'])->name('reject');
-        Route::post('/{borrow}/confirm-borrow', [BorrowController::class, 'confirmBorrow'])->name('confirm-borrow');
-        Route::post('/{borrow}/confirm-return', [BorrowController::class, 'confirmReturn'])->name('confirm-return');
+        Route::get('/pending', [AdminBorrowController::class, 'pendingRequests'])->name('pending');
+        Route::post('/{borrow}/approve', [AdminBorrowController::class, 'approve'])->name('approve');
+        Route::post('/{borrow}/reject', [AdminBorrowController::class, 'reject'])->name('reject');
+        Route::post('/{borrow}/confirm-borrow', [AdminBorrowController::class, 'confirmBorrow'])->name('confirm-borrow');
+        Route::post('/{borrow}/confirm-return', [AdminBorrowController::class, 'confirmReturn'])->name('confirm-return');
     });
+
+
 
     // Admin User Management
     Route::prefix('users')->name('users.')->group(function () {
