@@ -30,11 +30,12 @@ class BorrowController extends Controller
     // Ajukan peminjaman
     public function store(Request $request)
     {
-        $request->validate([
-            'book_id' => 'required|exists:books,id',
-            'borrow_date' => 'required|date|after_or_equal:today',
-            'return_date' => 'required|date|after:borrow_date',
+       $request->validate([
+        'book_id' => 'required|exists:books,id',
+        'borrow_date' => 'required|date',
+        'return_date' => 'required|date|after_or_equal:borrow_date',
         ]);
+
 
         $book = Book::findOrFail($request->book_id);
         
@@ -54,14 +55,14 @@ class BorrowController extends Controller
         }
 
         Borrow::create([
-            'user_id' => Auth::id(),
+            'user_id' => auth()->id(),
             'book_id' => $request->book_id,
             'borrow_date' => $request->borrow_date,
             'return_date' => $request->return_date,
-            'status' => 'pending',
-            'request_date' => now(),
+            // status otomatis pending dari migration
         ]);
 
-        return redirect()->route('user.borrows.index')->with('success', 'Permohonan peminjaman berhasil diajukan! Menunggu persetujuan admin.');
+        return redirect()->route('user.borrows.index')
+                     ->with('success', 'Permintaan peminjaman berhasil diajukan dan menunggu persetujuan admin.');
     }
 }

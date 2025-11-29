@@ -46,9 +46,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Borrow Management
     Route::prefix('borrows')->name('borrows.')->group(function () {
-        Route::get('/pending', [AdminBorrowController::class, 'pendingRequests'])->name('pending');
-        Route::post('/{borrow}/approve', [AdminBorrowController::class, 'approve'])->name('approve');
-        Route::post('/{borrow}/reject', [AdminBorrowController::class, 'reject'])->name('reject');
+        Route::get('/pending', [AdminBorrowController::class, 'pending'])->name('pending');
+        Route::post('/{id}/approve', [AdminBorrowController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [AdminBorrowController::class, 'reject'])->name('reject');
         Route::post('/{borrow}/confirm-borrow', [AdminBorrowController::class, 'confirmBorrow'])->name('confirm-borrow');
         Route::post('/{borrow}/confirm-return', [AdminBorrowController::class, 'confirmReturn'])->name('confirm-return');
     });

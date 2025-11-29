@@ -4,92 +4,68 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Borrow;
+use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BorrowController extends Controller
 {
-    // Admin: Tampilkan request pending
-    public function pendingRequests()
+    // ============================
+    // 1. TAMPILKAN PENDING REQUEST
+    // ============================
+    public function pending()
     {
-        $pendingBorrows = Borrow::pending()
-            ->with(['user', 'book'])
-            ->latest()
+        $pendingBorrows = Borrow::with(['user', 'book'])
+            ->where('status', 'pending')
+            ->orderBy('request_date', 'desc')
             ->get();
 
         return view('admin.borrows.pending', compact('pendingBorrows'));
     }
 
-    // Admin: Approve request
-    public function approve(Borrow $borrow)
+    // ============================
+    // 2. APPROVE REQUEST
+    // ============================
+    public function approve($id)
     {
-        if ($borrow->status !== 'pending') {
-            return back()->withErrors(['error' => 'Permohonan ini sudah diproses.']);
+        $borrow = Borrow::findOrFail($id);
+
+        // Kurangi stok buku ketika approved
+        $book = $borrow->book;
+
+        if ($book->stock <= 0) {
+            return back()->withErrors(['Stok buku habis!']);
         }
 
-        if ($borrow->book->stock < 1) {
-            return back()->withErrors(['error' => 'Stok buku tidak mencukupi.']);
-        }
+        $book->stock -= 1;
+        $book->save();
 
-        $borrow->update([
-            'status' => 'approved',
-            'approved_date' => now(),
-            'approved_by' => Auth::id(),
-        ]);
+        // Update status borrowing
+        $borrow->status = 'approved';
+        $borrow->approved_by = Auth::id();
+        $borrow->approved_date = now();
+        $borrow->save();
 
-        $borrow->book->decrement('stock');
-
-        return back()->with('success', 'Peminjaman disetujui.');
+        return back()->with('success', 'Peminjaman berhasil disetujui!');
     }
 
-    // Admin: Reject request
-    public function reject(Request $request, Borrow $borrow)
+    // ============================
+    // 3. REJECT REQUEST
+    // ============================
+    public function reject(Request $request, $id)
     {
         $request->validate([
             'admin_notes' => 'required|string|max:500',
         ]);
 
-        if ($borrow->status !== 'pending') {
-            return back()->withErrors(['error' => 'Permohonan ini sudah diproses.']);
-        }
+        $borrow = Borrow::findOrFail($id);
 
-        $borrow->update([
-            'status' => 'rejected',
-            'admin_notes' => $request->admin_notes,
-            'approved_date' => now(),
-            'approved_by' => Auth::id(),
-        ]);
+        $borrow->status = 'rejected';
+        $borrow->admin_notes = $request->admin_notes;
+        $borrow->approved_by = Auth::id();
+        $borrow->approved_date = now();
+        $borrow->save();
 
-        return back()->with('success', 'Peminjaman ditolak.');
-    }
-
-    // Admin: Konfirmasi buku diambil
-    public function confirmBorrow(Borrow $borrow)
-    {
-        if ($borrow->status !== 'approved') {
-            return back()->withErrors(['error' => 'Hanya peminjaman yang sudah disetujui yang bisa dikonfirmasi.']);
-        }
-
-        $borrow->update([
-            'status' => 'active',
-        ]);
-
-        return back()->with('success', 'Status peminjaman berubah menjadi aktif.');
-    }
-
-    // Admin: Konfirmasi pengembalian
-    public function confirmReturn(Borrow $borrow)
-    {
-        if ($borrow->status !== 'active') {
-            return back()->withErrors(['error' => 'Hanya peminjaman aktif yang bisa dikembalikan.']);
-        }
-
-        $borrow->book->increment('stock');
-
-        $borrow->update([
-            'status' => 'returned',
-        ]);
-
-        return back()->with('success', 'Buku berhasil dikembalikan.');
+        return back()->with('success', 'Peminjaman berhasil ditolak.');
     }
 }
