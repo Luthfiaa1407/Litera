@@ -7,7 +7,7 @@
         <!-- Header -->
         <div class="border-b" style="border-color: #0EA5E9; background-color: #F0F9FF;">
             <div class="max-w-4xl mx-auto px-6 py-8 lg:px-8">
-                <a href="{{ route('user.dashboard') }}" class="inline-block text-sm font-semibold" style="color: #0EA5E9;">
+                <a href="{{ route('user.books') }}" class="inline-block text-sm font-semibold" style="color: #0EA5E9;">
                     ← Kembali ke Katalog
                 </a>
             </div>

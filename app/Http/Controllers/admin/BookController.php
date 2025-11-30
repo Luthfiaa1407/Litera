@@ -115,13 +115,15 @@ class BookController extends Controller
             'file_path' => 'mimes:pdf|max:10000',
         ]);
 
-        $cover = $request->hasFile('cover')
-            ? $request->file('cover')->store('covers', 'public')
-            : null;
+        $cover = null;
+        if ($request->hasFile('cover') && $request->file('cover')->isValid()) {
+            $cover = $request->file('cover')->store('covers', 'public');
+        }
 
-        $file_path = $request->hasFile('file_path')
-            ? $request->file('file_path')->store('books', 'public')
-            : null;
+        $file_path = null;
+        if ($request->hasFile('file_path') && $request->file('file_path')->isValid()) {
+            $file_path = $request->file('file_path')->store('books', 'public');
+        }
         $year = null;
         if ($request->year) {
             // Jika formatnya YYYY-MM-DD → ambil YYYY saja
@@ -135,7 +137,7 @@ class BookController extends Controller
             'title' => $request->title,
             'author' => $request->author,
             'publisher' => $request->publisher,
-            'year' => $request->$year,
+            'year' => $year,
             'category_id' => $request->category_id,
             'cover' => $cover,
             'file_path' => $file_path,
