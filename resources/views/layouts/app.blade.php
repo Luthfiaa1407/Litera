@@ -122,6 +122,12 @@
                                 Kelola Buku
                             </a>
 
+                            <a href="{{ route('admin.categories.index') }}"
+                                class="nav-link-item text-sm px-3 py-2 rounded-lg
+                                {{ request()->routeIs('admin.categories.*') ? 'active-bg' : '' }}">
+                                Kelola Kategori
+                            </a>
+
                             <a href="{{ route('logout') }}" class="text-sm tracking-wide px-4 py-2 rounded-lg text-white"
                                 style="background: var(--color-primary-dark); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.2);">
                                 Logout
@@ -184,6 +190,11 @@
                             <a href="{{ route('admin.books.index') }}" class="py-2 px-3 text-sm"
                                 style="color: var(--color-primary-dark);">
                                 Kelola Buku
+                            </a>
+
+                            <a href="{{ route('admin.categories.index') }}" class="py-2 px-3 text-sm"
+                                style="color: var(--color-primary-dark);">
+                                Kelola Kategori
                             </a>
 
                             <a href="{{ route('logout') }}" class="py-2 px-3 text-sm text-white rounded-lg"
