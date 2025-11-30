@@ -13,10 +13,10 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             line-height: 1.6;
-            color: #2D2D2D;
-            background: linear-gradient(135deg, #FDFCF7 0%, #D9D7CB 100%);
+            color: #0F172A;
+            background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
             padding: 20px;
         }
 
@@ -26,12 +26,12 @@
             background: #FFFFFF;
             border-radius: 24px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(200, 197, 188, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.2);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #C8C5BC, #D9D7CB);
+            background: linear-gradient(135deg, #0891B2, #06B6D4);
             padding: 40px 20px;
             text-align: center;
             color: #FFFFFF;
@@ -51,7 +51,6 @@
         .header h1 {
             font-size: 28px;
             font-weight: 700;
-            letter-spacing: 1px;
             margin-bottom: 8px;
         }
 
@@ -66,12 +65,12 @@
 
         .greeting {
             font-size: 16px;
-            color: #2D2D2D;
+            color: #0F172A;
             margin-bottom: 20px;
         }
 
         .greeting strong {
-            color: #C8C5BC;
+            color: #06B6D4;
         }
 
         .otp-section {
@@ -82,7 +81,7 @@
         .otp-label {
             display: block;
             font-size: 12px;
-            color: #7F7F7F;
+            color: #64748B;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 12px;
@@ -91,39 +90,43 @@
 
         .otp-code {
             display: inline-block;
-            background: linear-gradient(135deg, #FDFCF7, #D9D7CB);
-            border: 2px solid #C8C5BC;
+            background: #F0F9FF;
+            border: 2px solid #06B6D4;
             border-radius: 16px;
             padding: 20px 40px;
             font-size: 36px;
             font-weight: 700;
             letter-spacing: 8px;
-            color: #2D2D2D;
+            color: #0F172A;
             font-family: 'Courier New', monospace;
-            box-shadow: 0 8px 20px rgba(200, 197, 188, 0.2);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2);
         }
 
         .info-box {
-            background: #FDFCF7;
-            border-left: 4px solid #C8C5BC;
+            background: #ECFEFF;
+            border-left: 4px solid #06B6D4;
             border-radius: 8px;
             padding: 16px;
             margin: 30px 0;
             font-size: 14px;
-            color: #2D2D2D;
+            color: #0F172A;
         }
 
         .info-box strong {
-            color: #C8C5BC;
+            color: #0891B2;
         }
 
         .instructions {
-            background: #F5F3ED;
+            background: #E0F7FA;
             border-radius: 12px;
             padding: 24px;
             margin: 20px 0;
             font-size: 14px;
-            color: #2D2D2D;
+            color: #0F172A;
+        }
+
+        .instructions strong {
+            color: #0891B2;
         }
 
         .instructions ol {
@@ -134,32 +137,28 @@
             margin-bottom: 10px;
         }
 
-        .instructions strong {
-            color: #C8C5BC;
-        }
-
         .footer {
-            border-top: 1px solid rgba(200, 197, 188, 0.2);
+            border-top: 1px solid rgba(6, 182, 212, 0.2);
             padding: 30px;
             text-align: center;
-            background: #FDFCF7;
+            background: #F0F9FF;
         }
 
         .footer-text {
             font-size: 12px;
-            color: #7F7F7F;
+            color: #64748B;
             margin-bottom: 12px;
         }
 
         .brand {
             font-size: 14px;
-            color: #2D2D2D;
+            color: #0F172A;
             font-weight: 600;
         }
 
         .warning {
             font-size: 12px;
-            color: #D9534F;
+            color: #DC2626;
             margin-top: 16px;
             line-height: 1.5;
         }
@@ -181,7 +180,7 @@
                 Halo <strong>{{ $userName ?? 'Pengguna' }}</strong>,
             </div>
 
-            <p style="color: #7F7F7F; font-size: 14px; margin-bottom: 24px;">
+            <p style="color: #64748B; font-size: 14px; margin-bottom: 24px;">
                 Kami menerima permintaan untuk memverifikasi akun Anda. Gunakan kode OTP di bawah ini untuk melanjutkan
                 proses verifikasi.
             </p>
@@ -199,8 +198,7 @@
 
             <!-- Instructions -->
             <div class="instructions">
-                <strong style="color: #C8C5BC; display: block; margin-bottom: 12px;">Langkah-langkah
-                    verifikasi:</strong>
+                <strong style="margin-bottom: 12px;">Langkah-langkah verifikasi:</strong>
                 <ol>
                     <li>Salin kode OTP di atas</li>
                     <li>Kembali ke aplikasi atau situs kami</li>

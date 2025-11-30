@@ -106,6 +106,7 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'title' => 'required',
             'author' => 'required',
@@ -121,12 +122,20 @@ class BookController extends Controller
         $file_path = $request->hasFile('file_path')
             ? $request->file('file_path')->store('books', 'public')
             : null;
-
+        $year = null;
+        if ($request->year) {
+            // Jika formatnya YYYY-MM-DD → ambil YYYY saja
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->year)) {
+                $year = substr($request->year, 0, 4);
+            } else {
+                $year = $request->year; // sudah berupa tahun biasa
+            }
+        }
         Book::create([
             'title' => $request->title,
             'author' => $request->author,
             'publisher' => $request->publisher,
-            'year' => $request->year,
+            'year' => $request->$year,
             'category_id' => $request->category_id,
             'cover' => $cover,
             'file_path' => $file_path,

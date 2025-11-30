@@ -3,156 +3,116 @@
 @section('title', 'Dashboard Admin')
 
 @section('content')
-<div class="container py-4">
+    <div class="max-w-7xl mx-auto px-4 py-6">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold" style="color: #8B4513;">Dashboard Admin</h2>
-    </div>
-
-    <!-- Quick Stats -->
-    <div class="row">
-
-        <!-- Pending Requests -->
-        <div class="col-md-2 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-hourglass-half fa-2x" style="color: #8B4513;"></i>
-                    </div>
-                    <h3 class="card-title" style="color: #8B4513;">Pending</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $pendingRequests ?? 0 }}</p>
-                </div>
-            </div>
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold" style="color:#0891B2;">Dashboard Admin</h2>
         </div>
 
-        <!-- Active Borrows -->
-        <div class="col-md-2 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-book-reader fa-2x" style="color: #8B4513;"></i>
-                    </div>
-                    <h3 class="card-title" style="color: #8B4513;">Dipinjam</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $activeBorrows ?? 0 }}</p>
-                </div>
-            </div>
-        </div>
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
 
-        <!-- Approved Requests -->
-        <div class="col-md-2 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-check-circle fa-2x" style="color: #8B4513;"></i>
-                    </div>
-                    <h3 class="card-title" style="color: #8B4513;">Disetujui</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $approvedRequests ?? 0 }}</p>
-                </div>
-            </div>
-        </div>
+            @php
+                $stats = [
+                    ['icon' => 'fa-hourglass-half', 'title' => 'Pending', 'value' => $pendingRequests ?? 0],
+                    ['icon' => 'fa-book-reader', 'title' => 'Dipinjam', 'value' => $activeBorrows ?? 0],
+                    ['icon' => 'fa-check-circle', 'title' => 'Disetujui', 'value' => $approvedRequests ?? 0],
+                    ['icon' => 'fa-users', 'title' => 'Users', 'value' => $totalUsers ?? 0],
+                    ['icon' => 'fa-book', 'title' => 'Total Buku', 'value' => $totalBooks ?? 0],
+                ];
+            @endphp
 
-        <!-- Users -->
-        <div class="col-md-2 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-users fa-2x" style="color: #8B4513;"></i>
+            @foreach ($stats as $stat)
+                <div class="bg-white rounded-xl shadow p-4 border-t-4" style="border-color:#06B6D4;">
+                    <div class="text-center">
+                        <i class="fas {{ $stat['icon'] }} text-3xl mb-2" style="color:#0891B2;"></i>
+                        <h5 class="font-semibold text-lg" style="color:#0891B2;">{{ $stat['title'] }}</h5>
+                        <p class="font-bold text-xl" style="color:#06B6D4;">{{ $stat['value'] }}</p>
                     </div>
-                    <h3 class="card-title" style="color: #8B4513;">Users</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $totalUsers ?? 0 }}</p>
                 </div>
-            </div>
-        </div>
+            @endforeach
 
-        <!-- Total Buku -->
-        <div class="col-md-2 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-book fa-2x" style="color: #8B4513;"></i>
-                    </div>
-                    <h3 class="card-title" style="color: #8B4513;">Total Buku</h3>
-                    <p class="card-text" style="color: #8B4513;">{{ $totalBooks ?? 0 }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2 mb-3">
-            <a href="{{ route('admin.categories.index') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-tags fa-2x" style="color: #8B4513;"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #8B4513;">Kelola</h3>
-                        <p class="card-text" style="color: #8B4513;">Kategori</p>
+            <!-- Kelola Kategori -->
+            <a href="{{ route('admin.categories.index') }}" class="no-underline">
+                <div class="bg-white rounded-xl shadow p-4 border-t-4 cursor-pointer hover:shadow-md transition"
+                    style="border-color:#06B6D4;">
+                    <div class="text-center">
+                        <i class="fas fa-tags text-3xl mb-2" style="color:#0891B2;"></i>
+                        <h5 class="font-semibold text-lg" style="color:#0891B2;">Kelola</h5>
+                        <p class="font-bold text-xl" style="color:#06B6D4;">Kategori</p>
                     </div>
                 </div>
             </a>
+
         </div>
 
-    </div>
+        <!-- Pending Approvals -->
+        @if (isset($pendingApprovals) && $pendingApprovals->count() > 0)
+            <div class="mt-6">
+                <div class="flex justify-between items-center bg-cyan-50 p-4 rounded-lg border-l-4"
+                    style="border-color:#06B6D4;">
+                    <div>
+                        <h5 class="font-bold text-lg flex items-center gap-2" style="color:#0891B2;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Ada {{ $pendingApprovals->count() }} permohonan pending!
+                        </h5>
+                        <span class="text-gray-500 text-sm">Segera tinjau permohonan untuk menghindari antrian.</span>
+                    </div>
 
-    <!-- Pending Approvals -->
-    @if(isset($pendingApprovals) && $pendingApprovals->count() > 0)
-    <div class="mt-4">
-        <div class="alert alert-warning">
-            <h5 class="alert-heading">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                Peringatan: Ada {{ $pendingApprovals->count() }} permohonan peminjaman yang menunggu persetujuan!
-            </h5>
-            <a href="{{ route('admin.borrows.pending') }}" class="btn btn-warning btn-sm mt-2">
-                <i class="fas fa-list me-1"></i>Lihat Permohonan Pending
-            </a>
-        </div>
-    </div>
-    @endif
+                    <a href="{{ route('admin.borrows.pending') }}" class="px-4 py-2 text-white rounded-md text-sm"
+                        style="background:#0891B2;">
+                        <i class="fas fa-list mr-1"></i> Lihat
+                    </a>
+                </div>
+            </div>
+        @endif
 
-    <!-- Riwayat Aktivitas Terbaru -->
-    <div class="mt-5">
-        <h4 class="fw-bold" style="color: #8B4513;">Aktivitas Terbaru</h4>
-        <div class="card border-0 shadow-sm mt-3">
-            <div class="card-body">
+        <!-- Latest Activities -->
+        <div class="mt-10">
+            <h4 class="text-xl font-bold mb-4" style="color:#0891B2;">Aktivitas Terbaru</h4>
 
-                @if(isset($recentActivities) && $recentActivities->count() > 0)
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Peminjam</th>
-                                <th>Buku</th>
-                                <th>Status</th>
-                                <th>Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($recentActivities as $activity)
-                            <tr>
-                                <td>{{ $activity->user->name ?? 'N/A' }}</td>
-                                <td>{{ $activity->book->title ?? 'N/A' }}</td>
-                                <td>
-                                    <span class="badge 
-                                        @if($activity->status == 'pending') bg-warning
-                                        @elseif($activity->status == 'active') bg-primary
-                                        @elseif($activity->status == 'approved') bg-info
-                                        @elseif($activity->status == 'returned') bg-success
-                                        @elseif($activity->status == 'rejected') bg-danger
-                                        @else bg-secondary @endif">
-                                        {{ ucfirst($activity->status) }}
-                                    </span>
-                                </td>
-                                <td>{{ $activity->created_at->format('d M Y H:i') }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <div class="bg-white shadow rounded-xl p-4">
+                @if (isset($recentActivities) && $recentActivities->count() > 0)
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead style="background:#06B6D4;" class="text-white">
+                                <tr>
+                                    <th class="text-left p-3">Peminjam</th>
+                                    <th class="text-left p-3">Buku</th>
+                                    <th class="text-left p-3">Status</th>
+                                    <th class="text-left p-3">Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($recentActivities as $activity)
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="p-3">{{ $activity->user->name ?? 'N/A' }}</td>
+                                        <td class="p-3">{{ $activity->book->title ?? 'N/A' }}</td>
+                                        <td class="p-3">
+                                            <span
+                                                class="px-3 py-1 rounded-full text-white text-sm
+                                    @if ($activity->status == 'pending') bg-yellow-500
+                                    @elseif($activity->status == 'active') bg-blue-600
+                                    @elseif($activity->status == 'approved') bg-cyan-500
+                                    @elseif($activity->status == 'returned') bg-green-600
+                                    @elseif($activity->status == 'rejected') bg-red-600
+                                    @else bg-gray-600 @endif
+                                ">
+                                                {{ ucfirst($activity->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="p-3">{{ $activity->created_at->format('d M Y H:i') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 @else
-                    <p class="text-muted">Belum ada aktivitas terbaru.</p>
+                    <p class="text-gray-500">Belum ada aktivitas terbaru.</p>
                 @endif
-
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 @endsection

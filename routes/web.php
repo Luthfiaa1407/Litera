@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\GoogleBooksController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BorrowController;
+use App\Http\Controllers\BorrowController; // untuk USER
+use App\Http\Controllers\Admin\BorrowController as AdminBorrowController; // untuk ADMIN
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +37,6 @@ Route::get('/verify-otp', [VerifyOtpController::class, 'showVerifyForm'])->name(
 Route::post('/verify-otp', [VerifyOtpController::class, 'verify'])->name('verify.otp');
 Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])->name('verify.otp.resend');
 
-
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
@@ -45,12 +46,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Borrow Management
     Route::prefix('borrows')->name('borrows.')->group(function () {
-        Route::get('/pending', [BorrowController::class, 'pendingRequests'])->name('pending');
-        Route::post('/{borrow}/approve', [BorrowController::class, 'approve'])->name('approve');
-        Route::post('/{borrow}/reject', [BorrowController::class, 'reject'])->name('reject');
-        Route::post('/{borrow}/confirm-borrow', [BorrowController::class, 'confirmBorrow'])->name('confirm-borrow');
-        Route::post('/{borrow}/confirm-return', [BorrowController::class, 'confirmReturn'])->name('confirm-return');
+        Route::get('/pending', [AdminBorrowController::class, 'pending'])->name('pending');
+        Route::post('/{id}/approve', [AdminBorrowController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [AdminBorrowController::class, 'reject'])->name('reject');
+        Route::post('/{borrow}/confirm-borrow', [AdminBorrowController::class, 'confirmBorrow'])->name('confirm-borrow');
+        Route::post('/{borrow}/confirm-return', [AdminBorrowController::class, 'confirmReturn'])->name('confirm-return');
     });
+
+
 
     // Admin User Management
     Route::prefix('users')->name('users.')->group(function () {
@@ -70,6 +73,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{book}/update', [BookController::class, 'update'])->name('update');
         Route::delete('/{book}/delete', [BookController::class, 'destroy'])->name('destroy');
         Route::get('/{book}', [BookController::class, 'show'])->name('show');
+
+        // 🔽 Tambahan untuk Google Books
+        Route::get('/google/search', [GoogleBooksController::class, 'search'])->name('google.search');
+        Route::get('/google/detail/{id}', [GoogleBooksController::class, 'detail'])->name('google.detail');
     });
 
     Route::prefix('categories')->name('categories.')->group(function () {
@@ -80,6 +87,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{category}/update', [CategoryController::class, 'update'])->name('update');
         Route::delete('/{category}/delete', [CategoryController::class, 'destroy'])->name('destroy');
     });
+
 });
 
 // User Routes
@@ -108,5 +116,11 @@ Route::middleware(['auth', 'verified.email'])->group(function () {
         Route::get('/edit', [UserController::class, 'editProfile'])->name('edit');
         Route::put('/update', [UserController::class, 'updateProfile'])->name('update');
         Route::put('/update-password', [UserController::class, 'updatePassword'])->name('update-password');
+    });
+
+    // User Book Routes
+    Route::prefix('user/books')->name('users.books.')->group(function () {
+        Route::get('/', [UserController::class, 'books'])->name('index');
+        Route::get('/{book}', [UserController::class, 'showBook'])->name('show');
     });
 });

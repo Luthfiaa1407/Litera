@@ -10,7 +10,7 @@
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4"
-    style="background: linear-gradient(135deg, #FDFCF7 0%, #D9D7CB 100%);">
+    style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
 
     @php
         $email = session('otp_email');
@@ -19,18 +19,20 @@
     @endphp
 
     <div class="w-full max-w-md relative z-10">
-        <!-- Card with dramatic shadow -->
+
         <div class="bg-white backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-8 md:p-10 border border-opacity-20"
-            style="border-color: #C8C5BC; box-shadow: 0 20px 60px rgba(0,0,0,0.08);">
+            style="border-color: #06B6D4; box-shadow: 0 20px 60px rgba(6, 182, 212, 0.15);">
 
             <!-- Header -->
             <div class="text-center mb-8">
+
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-                    style="background: linear-gradient(135deg, #C8C5BC, #D9D7CB);">
+                    style="background: linear-gradient(135deg, #06B6D4, #0891B2);">
                     <i class="fas fa-shield-alt text-white text-2xl"></i>
                 </div>
-                <h1 class="text-4xl font-bold tracking-tight" style="color: #2D2D2D;">Verifikasi OTP</h1>
-                <p class="mt-2 text-sm" style="color: #7F7F7F;">Masukkan kode OTP yang telah dikirim</p>
+
+                <h1 class="text-4xl font-bold tracking-tight" style="color: #0F172A;">Verifikasi OTP</h1>
+                <p class="mt-2 text-sm" style="color: #0891B2;">Masukkan kode OTP yang telah dikirim</p>
             </div>
 
             <!-- Alerts -->
@@ -65,46 +67,48 @@
                 <input type="hidden" name="email" value="{{ $email }}">
 
                 <div>
-                    <label for="otp" class="block text-sm font-semibold mb-3" style="color: #2D2D2D;">Kode OTP 6
-                        Digit</label>
+                    <label for="otp" class="block text-sm font-semibold mb-3" style="color: #0F172A;">
+                        Kode OTP 6 Digit
+                    </label>
+
                     <div class="flex gap-2 justify-between">
                         @for ($i = 1; $i <= 6; $i++)
                             <input type="text"
                                 class="w-12 h-14 text-center text-2xl font-bold rounded-xl border-2 transition-all focus:outline-none focus:scale-110"
-                                style="border-color: #E0DED4; background: #FDFCF7;" maxlength="1" pattern="\d"
+                                style="border-color: #06B6D4; background: #F0F9FF;" maxlength="1" pattern="\d"
                                 inputmode="numeric" data-index="{{ $i }}">
                         @endfor
                     </div>
+
                     <input type="hidden" id="otp" name="otp" value="">
                 </div>
 
-                <div class="text-center text-xs" style="color: #A0A0A0;">
+                <div class="text-center text-xs" style="color: #64748B;">
                     <p>Kode OTP dikirim ke email Anda</p>
                     <p class="mt-1">{{ $username }}***{{ $domain }}</p>
                 </div>
 
                 <button type="submit"
                     class="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 text-base"
-                    style="background: linear-gradient(135deg, #C8C5BC, #B5B1A5);">
+                    style="background: linear-gradient(135deg, #06B6D4, #0891B2); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25);">
                     <i class="fas fa-check-circle"></i> Verifikasi OTP
                 </button>
             </form>
 
-            <!-- Resend OTP -->
+            <!-- Resend -->
             <div class="mt-4 text-center">
-                <p class="text-sm" style="color: #7F7F7F;">
-                    {{-- Tidak menerima kode?
-                    <a href="#" class="font-semibold transition-colors hover:underline" style="color: #C8C5BC;"
-                        onclick="resendOTP(event)">Kirim ulang</a> --}}
                 <form action="{{ route('verify.otp.resend') }}" method="POST">
                     @csrf
-                    <button type="submit" class="btn btn-link">Kirim Ulang OTP</button>
+                    <button type="submit" class="font-semibold hover:underline" style="color: #06B6D4;">
+                        Kirim Ulang OTP
+                    </button>
                 </form>
-                </p>
             </div>
         </div>
 
-        <p class="text-center text-xs mt-8" style="color: #A0A0A0;">© 2025 Litera. Semua hak dilindungi.</p>
+        <p class="text-center text-xs mt-8" style="color: #06B6D4;">
+            © 2025 Litera. Semua hak dilindungi.
+        </p>
     </div>
 
     <style>
@@ -125,8 +129,8 @@
         }
 
         input[type="text"]:focus {
-            box-shadow: 0 0 0 3px rgba(200, 197, 188, 0.1);
-            border-color: #C8C5BC;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+            border-color: #06B6D4;
         }
 
         input[data-index]::-webkit-outer-spin-button,
@@ -137,7 +141,7 @@
 
         @media (max-width: 640px) {
             body {
-                background: #FDFCF7;
+                background: #0F172A;
             }
 
             .flex.gap-2 {
@@ -163,7 +167,7 @@
                 if (e.target.value && index < otpInputs.length - 1) {
                     otpInputs[index + 1].focus();
                 }
-                updateOTPField();
+                updateOTP();
             });
 
             input.addEventListener('keydown', (e) => {
@@ -173,13 +177,8 @@
             });
         });
 
-        function updateOTPField() {
+        function updateOTP() {
             otpField.value = Array.from(otpInputs).map(i => i.value).join('');
-        }
-
-        function resendOTP(e) {
-            e.preventDefault();
-            alert('Kode OTP akan dikirim ulang ke email Anda dalam beberapa saat.');
         }
     </script>
 

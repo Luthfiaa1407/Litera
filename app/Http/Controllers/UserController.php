@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Book;
-use App\Models\Borrow;
 
 class UserController extends Controller
 {
@@ -14,9 +13,9 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Pastikan user sudah login
-            if (!$user) {
+            if (! $user) {
                 return redirect()->route('login');
             }
 
@@ -29,8 +28,8 @@ class UserController extends Controller
             // Hitung sisa hari peminjaman
             $days_left = null;
             if ($active_borrows->isNotEmpty()) {
-                $nearest = $active_borrows->filter(function($b) {
-                    return !is_null($b->return_date);
+                $nearest = $active_borrows->filter(function ($b) {
+                    return ! is_null($b->return_date);
                 })->sortBy('return_date')->first();
 
                 if ($nearest && $nearest->return_date) {
@@ -65,28 +64,31 @@ class UserController extends Controller
                 'days_left' => null,
                 'books_count' => 0,
                 'available_books' => collect(),
-            ])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            ])->with('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
     }
 
     public function showProfile()
     {
         $user = Auth::user();
+
         return view('user.profile.index', compact('user'));
     }
 
     public function editProfile()
-{
-    $user = Auth::user();
-    return view('user.profile.edit', compact('user'));
-}
+    {
+        $user = Auth::user();
+
+        return view('user.profile.edit', compact('user'));
+    }
+
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
         ]);
 
         try {
@@ -97,11 +99,12 @@ class UserController extends Controller
 
             return redirect()->route('user.profile.index')
                 ->with('success', 'Profile berhasil diperbarui!');
-                
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui profile: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui profile: '.$e->getMessage());
         }
     }
+
     public function updatePassword(Request $request)
     {
         $user = Auth::user();
@@ -112,7 +115,7 @@ class UserController extends Controller
         ]);
 
         // Cek password saat ini
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
@@ -123,9 +126,21 @@ class UserController extends Controller
 
             return redirect()->route('user.profile.index')
                 ->with('success', 'Password berhasil diperbarui!');
-                
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui password: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui password: '.$e->getMessage());
         }
+    }
+
+    public function books()
+    {
+        $books = Book::where('stock', '>', 0)->paginate(12);
+
+        return view('user.books.index', compact('books'));
+    }
+
+    public function showBook(Book $book)
+    {
+        return view('user.book-detail', compact('book'));
     }
 }
