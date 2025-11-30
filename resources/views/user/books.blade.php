@@ -13,54 +13,55 @@
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-6 py-12 lg:px-8">
-        <h1 class="text-3xl font-black mb-6" style="color: #1a1a1a;">Katalog Buku</h1>
+    <div class="max-w-7xl mx-auto px-4 py-6">
 
-        <div class="mb-6">
-            <form method="GET" action="{{ route('user.books') }}" class="row g-2">
-                <div class="col-md-6 mb-2">
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Cari judul atau penulis...">
-                </div>
+        <!-- Header + search -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+                <h2 class="text-2xl font-bold" style="color:#0891B2;">Katalog Buku</h2>
+                <p class="text-sm text-gray-500 mt-1">Jelajahi koleksi buku. Gunakan pencarian atau filter kategori untuk mempersempit hasil.</p>
+            </div>
 
-                <div class="col-md-4 mb-2">
-                    <select name="category" class="form-select">
-                        <option value="">Semua Kategori</option>
-                        @foreach ($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <form method="GET" action="{{ route('user.books') }}" class="flex items-center gap-2 w-full sm:w-auto">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul atau penulis..." class="px-3 py-2 border rounded-md w-full sm:w-72" />
 
-                <div class="col-md-2 mb-2">
-                    <button class="btn text-white w-100" style="background-color: #8B4513;">Cari</button>
-                </div>
+                <select name="category" class="px-3 py-2 border rounded-md">
+                    <option value="">Semua Kategori</option>
+                    @foreach ($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+
+                <button class="px-4 py-2 rounded-md text-white text-sm" style="background:#0891B2;">Cari</button>
             </form>
         </div>
 
         @if($books->count())
-            <div class="row g-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach($books as $book)
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div style="height:220px; overflow:hidden; background-color:#D9D7CB;">
-                                @if($book->cover)
-                                    <img src="{{ asset('storage/' . $book->cover) }}" alt="{{ $book->title }}" class="w-100 h-100 object-fit-cover">
-                                @else
-                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">Tidak ada cover</div>
-                                @endif
-                            </div>
+                    <a href="{{ route('user.books.show', $book) }}" class="no-underline">
+                        <div class="bg-white rounded-xl shadow p-4 border-t-4 hover:shadow-lg transition h-full" style="border-color:#06B6D4;">
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0 w-28 h-36 bg-[#D9D7CB] rounded overflow-hidden">
+                                    @if($book->cover)
+                                        <img src="{{ asset('storage/' . $book->cover) }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-gray-500 text-sm">Tidak ada cover</div>
+                                    @endif
+                                </div>
 
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold" style="color:#1a1a1a;">{{ Str::limit($book->title, 60) }}</h5>
-                                <p class="mb-1 text-muted">{{ $book->author }}</p>
-                                <p class="mb-2 small text-muted">{{ $book->category->name ?? '-' }}</p>
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-semibold text-[#1a1a1a]">{{ Str::limit($book->title, 60) }}</h3>
+                                    <p class="text-sm text-gray-500 mt-1">{{ $book->author }}</p>
+                                    <p class="text-xs text-gray-400 mt-2">{{ $book->category->name ?? '-' }}</p>
 
-                                <a href="{{ route('user.books.show', $book) }}" class="btn btn-outline-secondary btn-sm">Lihat Detail</a>
+                                    <div class="mt-4">
+                                        <span class="inline-block px-3 py-1 rounded-full text-white text-sm bg-[#0891B2]">Lihat Detail</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
 
@@ -68,7 +69,7 @@
                 {{ $books->links() }}
             </div>
         @else
-            <div class="text-center text-muted py-6">
+            <div class="text-center text-gray-500 py-6">
                 <i class="fas fa-search me-2"></i> Tidak ditemukan buku.
             </div>
         @endif
