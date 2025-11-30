@@ -99,7 +99,9 @@
                                 Dashboard
                             </a>
 
-                            <a href="#" class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg">
+                            <a href="{{ route('user.books') }}"
+                               class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                {{ request()->routeIs('user.books') ? 'active-bg' : '' }}">
                                 Kategori
                             </a>
 
@@ -162,7 +164,8 @@
                                 Dashboard
                             </a>
 
-                            <a href="#" class="py-2 px-3 rounded-lg text-sm">
+                            <a href="{{ route('user.books') }}" class="py-2 px-3 rounded-lg text-sm
+                               {{ request()->routeIs('user.books') ? 'active-bg' : '' }}">
                                 Kategori
                             </a>
 

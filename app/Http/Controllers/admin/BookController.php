@@ -58,11 +58,27 @@ class BookController extends Controller
     /**
      * HALAMAN LIST BUKU UNTUK USER
      */
-    public function userBooks()
+    public function userBooks(Request $request)
     {
-        $books = Book::latest()->paginate(12);
+        $query = Book::with('category')->latest();
 
-        return view('user.books', compact('books'));
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('author', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->input('category'));
+        }
+
+        $books = $query->paginate(40)->appends($request->query());
+
+        $categories = Category::all();
+
+        return view('user.books', compact('books', 'categories'));
     }
 
     /**

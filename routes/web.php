@@ -88,6 +88,14 @@ Route::middleware(['auth', 'verified.email'])->group(function () {
     // User Dashboard
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 
+    // Public/User book listing and detail
+    Route::get('/books', [BookController::class, 'userBooks'])->name('user.books');
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('user.books.show');
+
+    // User categories (list + books by category)
+    Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('user.categories.index');
+    Route::get('/categories/{category}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('user.categories.show');
+
     // User Borrowing
     Route::prefix('user/borrows')->name('user.borrows.')->group(function () {
         Route::get('/', [BorrowController::class, 'index'])->name('index');

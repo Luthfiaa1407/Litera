@@ -23,7 +23,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:categories,name',
             'description' => 'nullable'
         ]);
 
@@ -41,7 +41,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:categories,name,' . $category->id,
             'description' => 'nullable'
         ]);
 
@@ -53,6 +53,13 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        // Prevent deleting a category that still has books. This keeps file cleanup
+        // and data integrity in control similar to how books are handled.
+        if ($category->books()->exists()) {
+            return redirect()->route('admin.categories.index')
+                ->with('error', 'Kategori tidak bisa dihapus karena masih memiliki buku. Hapus atau pindahkan buku terlebih dahulu.');
+        }
+
         $category->delete();
 
         return redirect()->route('admin.categories.index')
