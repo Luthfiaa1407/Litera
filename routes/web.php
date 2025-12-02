@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\BorrowController as AdminBorrowController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\GoogleBooksController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BorrowController; // untuk USER
-use App\Http\Controllers\Admin\BorrowController as AdminBorrowController; // untuk ADMIN
+use App\Http\Controllers\AuthController; // untuk USER
+use App\Http\Controllers\BorrowController; // untuk ADMIN
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +39,20 @@ Route::get('/verify-otp', [VerifyOtpController::class, 'showVerifyForm'])->name(
 Route::post('/verify-otp', [VerifyOtpController::class, 'verify'])->name('verify.otp');
 Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])->name('verify.otp.resend');
 
+// Forgot Password
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('password.request');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+
+// Reset Password
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+    ->name('password.update');
+
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
@@ -52,8 +68,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/{borrow}/confirm-borrow', [AdminBorrowController::class, 'confirmBorrow'])->name('confirm-borrow');
         Route::post('/{borrow}/confirm-return', [AdminBorrowController::class, 'confirmReturn'])->name('confirm-return');
     });
-
-
 
     // Admin User Management
     Route::prefix('users')->name('users.')->group(function () {

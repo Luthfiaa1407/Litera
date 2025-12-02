@@ -29,6 +29,7 @@ class VerifyOtpController extends Controller
         ]);
 
         $email = session('otp_email');
+        $mode = session('otp_mode'); // <-- Tambahkan ini
 
         if (! $email) {
             return redirect('/login')->with('error', 'Session expired.');
@@ -53,22 +54,46 @@ class VerifyOtpController extends Controller
             return back()->with('error', 'OTP kadaluarsa.');
         }
 
-        // Tandai OTP sudah digunakan
+        // Tandai digunakan
         $otpData->update([
             'status' => 'used',
         ]);
-        $user->update([
-            'is_verified' => true,
-            'otp' => null,
-            'otp_expires_at' => null,
-        ]);
 
-        // Login user
-        Auth::login($user);
+        // Jika mode = reset password → arahkan ke halaman reset password
+        if ($mode === 'reset_password') {
 
-        session()->forget('otp_email');
+            $token = session('reset_token');
 
-        return redirect()->route('user.dashboard')->with('success', 'Berhasil login!');
+            if (! $token) {
+                return redirect('/forgot-password')->with('error', 'Token tidak ditemukan.');
+            }
+
+            // Hapus session
+            session()->forget(['otp_email', 'otp_mode']);
+
+            return redirect()->route('password.reset', [
+                'token' => $token,
+                'email' => $email,
+            ]);
+        }
+
+        // Jika mode = verifikasi akun (register/login)
+        if ($mode === 'verification') {
+
+            // tandai verified
+            $user->update([
+                'is_verified' => true,
+            ]);
+
+            Auth::login($user);
+
+            session()->forget(['otp_email', 'otp_mode']);
+
+            return redirect()->route('user.dashboard')->with('success', 'Berhasil login!');
+        }
+
+        // fallback jika ada bug
+        return redirect('/login')->with('error', 'Mode OTP tidak valid.');
     }
 
     public function resend(Request $request)

@@ -93,6 +93,14 @@
                     </label>
                 </div>
 
+                <!-- 🔥 Tombol Lupa Password baru -->
+                <div class="text-right">
+                    <a href="{{ route('password.request') }}" class="text-sm font-semibold hover:underline"
+                        style="color: #0891B2;">
+                        Lupa Password?
+                    </a>
+                </div>
+
                 <!-- Updated button gradient -->
                 <button type="submit"
                     class="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 text-base"

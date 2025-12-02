@@ -46,7 +46,12 @@ class AuthController extends Controller
         ]);
 
         // Simpan session
-        session(['otp_email' => $user->email]);
+        session([
+            'otp_mode' => 'verification',
+            'otp_email' => $request->email,
+            'otp_code' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
 
         // Kirim OTP
         Mail::to($user->email)->send(new OtpEmail($otp));
@@ -234,41 +239,5 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus user: '.$e->getMessage());
         }
-    }
-
-    public function showVerifyOtpForm()
-    {
-        return view('auth.verify-otp');
-    }
-
-    public function verifyOtp(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'otp' => 'required|digits:6',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user) {
-            return back()->with('error', 'Email tidak ditemukan.');
-        }
-
-        if ($user->otp !== $request->otp) {
-            return back()->with('error', 'OTP salah.');
-        }
-
-        if ($user->otp_expires_at < now()) {
-            return back()->with('error', 'OTP sudah kadaluarsa.');
-        }
-
-        // Verifikasi berhasil
-        $user->update([
-            'is_verified' => true,
-            'otp' => null,
-            'otp_expires_at' => null,
-        ]);
-
-        return redirect()->route('login')->with('success', 'Verifikasi berhasil! Silakan login.');
     }
 }
