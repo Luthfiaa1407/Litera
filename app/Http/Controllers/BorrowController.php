@@ -14,27 +14,26 @@ class BorrowController extends Controller
     {
         $borrows = Borrow::where('user_id', Auth::id())
             ->with('book')
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('user.borrows.index', compact('borrows'));
     }
 
-    // Form ajukan peminjaman (optional ?book_id=)
+    // Form ajukan peminjaman
     public function create(Request $request)
     {
         $bookId = $request->get('book_id');
-
         $book = Book::findOrFail($bookId);
 
         return view('user.borrows.create', compact('book'));
     }
 
-    // Store peminjaman
+    // Simpan permintaan peminjaman (PENDING)
     public function store(Request $request)
     {
         $request->validate([
-            'book_id' => 'required|exists:books,id',
+            'book_id'     => 'required|exists:books,id',
             'borrow_date' => 'required|date|after_or_equal:today',
             'return_date' => 'required|date|after:borrow_date',
         ]);
@@ -42,36 +41,63 @@ class BorrowController extends Controller
         $book = Book::findOrFail($request->book_id);
 
         if ($book->stock < 1) {
-            return back()->withErrors(['error' => 'Buku tidak tersedia untuk dipinjam.'])->withInput();
+            return back()->withErrors(['error' => 'Stok buku habis.'])->withInput();
         }
 
-        $existingBorrow = Borrow::where('user_id', Auth::id())
+        // Cegah double request
+        $alreadyRequested = Borrow::where('user_id', Auth::id())
             ->where('book_id', $request->book_id)
             ->whereIn('status', ['pending', 'approved', 'active'])
-            ->first();
+            ->exists();
 
-        if ($existingBorrow) {
-            return back()->withErrors(['error' => 'Anda sudah mengajukan peminjaman untuk buku ini.'])->withInput();
+        if ($alreadyRequested) {
+            return back()->withErrors(['error' => 'Anda sudah mengajukan peminjaman untuk buku ini.']);
         }
 
-        $borrow = Borrow::create([
-            'user_id' => auth()->id(),
-            'book_id' => $request->book_id,
-            'borrow_date' => $request->borrow_date,
-            'return_date' => $request->return_date,
-            'status' => 'pending',
+        // Simpan sebagai PENDING
+        Borrow::create([
+            'user_id'      => Auth::id(),
+            'book_id'      => $request->book_id,
+            'borrow_date'  => $request->borrow_date,
+            'return_date'  => $request->return_date,
+            'status'       => 'pending',
             'request_date' => now(),
         ]);
 
         return redirect()->route('user.borrows.index')
-                     ->with('success', 'Permintaan peminjaman berhasil diajukan dan menunggu persetujuan admin.');
+            ->with('success', 'Permohonan berhasil dikirim dan menunggu persetujuan admin.');
     }
 
-    // (optional) show single borrow detail for user
+    // Detail peminjaman
     public function show(Borrow $borrow)
     {
-        $this->authorize('view', $borrow); // optional: add policy to ensure owner
-        $borrow->load('book', 'user', 'admin');
+        if ($borrow->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $borrow->load('book');
+
         return view('user.borrows.show', compact('borrow'));
     }
+
+    public function return(Borrow $borrow)
+{
+    // Pastikan hanya pemilik yang bisa kembalikan
+    if ($borrow->user_id !== Auth::id()) {
+        abort(403);
+    }
+
+    // Update status peminjaman
+    $borrow->update([
+        'status' => 'returned',
+        'returned_at' => now(),
+    ]);
+
+    // Tambah stok buku
+    $borrow->book->increment('stock');
+
+    return back()->with('success', 'Buku berhasil dikembalikan.');
+}
+
+
 }

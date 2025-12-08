@@ -92,11 +92,30 @@
 
                         <!-- Borrow Button -->
                         <!-- Updated button gradient to consistent indigo-to-cyan for all buttons -->
-                        <a href="{{ route('user.borrows.create', ['book_id' => $book->id]) }}"
-                            class="block w-full py-4 px-6 font-bold text-center rounded-lg transition-all shadow-md hover:shadow-lg hover:opacity-90 text-white"
-                            style="background: linear-gradient(135deg, #1E1B4B, #0EA5E9); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.2);">
-                            Pinjam Buku
-                        </a>
+                        <form action="{{ route('user.borrows.store') }}" method="POST" class="space-y-5">
+    @csrf
+
+    <input type="hidden" name="book_id" value="{{ $book->id }}">
+
+    <div>
+        <label class="block font-medium mb-1">Tanggal Pinjam</label>
+        <input type="date" name="borrow_date"
+            class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-cyan-400 focus:outline-none" required>
+    </div>
+
+    <div>
+        <label class="block font-medium mb-1">Tanggal Kembali</label>
+        <input type="date" name="return_date"
+            class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-cyan-400 focus:outline-none" required>
+    </div>
+
+    <button type="submit"
+        class="w-full py-3 rounded-xl text-white font-semibold text-lg transition hover:scale-[1.01]"
+        style="background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));">
+        Ajukan Peminjaman
+    </button>
+</form>
+
 
                     </div>
                 </div>

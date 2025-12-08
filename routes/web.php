@@ -92,8 +92,15 @@ Route::middleware(['auth', 'verified.email'])->group(function () {
     Route::get('/books/{book}', [BookController::class, 'show'])->name('user.books.show');
 
     // Form pinjam (jika mau pakai halaman khusus)
-    Route::get('/user/borrows/create', [BorrowController::class, 'create'])
-        ->name('user.borrows.create');
+    Route::prefix('borrows')->name('borrows.')->group(function () {
+    Route::get('/', [BorrowController::class, 'index'])->name('index');
+    Route::get('/create', [BorrowController::class, 'create'])->name('create');
+    Route::post('/store', [BorrowController::class, 'store'])->name('store');
+    Route::get('/{borrow}', [BorrowController::class, 'show'])->name('show');
+
+    // ✅ Return buku (cukup satu route saja)
+    Route::post('/{borrow}/return', [BorrowController::class, 'returnBook'])->name('return');
+});
 
     // Simpan pinjaman dari FORM / tombol
     Route::post('/user/borrows/store', [BorrowController::class, 'store'])
