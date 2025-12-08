@@ -33,17 +33,23 @@
             <p class="mt-3">{{ $book->description }}</p>
 
             @if($book->stock > 0)
-                <form action="{{ route('books.borrow', $book->id) }}" method="POST">
+                <form action="{{ route('user.borrows.store') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="book_id" value="{{ $book->id }}">
+                    <input type="hidden" name="borrow_date" value="{{ now()->toDateString() }}">
+                    <input type="hidden" name="return_date" value="{{ now()->addDays(7)->toDateString() }}">
+
                     <button class="btn btn-primary btn-lg mt-3 w-100">
                         Pinjam Buku
                     </button>
                 </form>
+
             @else
                 <div class="alert alert-danger mt-3">
-                    Stok buku habis!
+                Stok buku habis!
                 </div>
             @endif
+
         </div>
     </div>
 

@@ -1,67 +1,50 @@
-@extends('layouts.user')
+@extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
+<div class="container mx-auto px-4 py-10">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold">Riwayat Peminjaman</h4>
-        <a href="{{ route('user.borrows.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i> Ajukan Peminjaman
-        </a>
-    </div>
+    <h2 class="text-3xl font-bold mb-6" style="color: var(--color-primary-dark);">
+        📚 Riwayat Peminjaman
+    </h2>
 
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    @error('error')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Buku</th>
-                        <th>Tanggal Pinjam</th>
-                        <th>Batas Kembali</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($borrows as $borrow)
-                        <tr>
-                            <td>{{ $borrow->book->title }}</td>
-                            <td>{{ $borrow->borrow_date }}</td>
-                            <td>{{ $borrow->return_date }}</td>
-                            <td>
-                                <span class="badge 
-                                    @if ($borrow->status == 'pending') bg-warning 
-                                    @elseif ($borrow->status == 'approved') bg-info
-                                    @elseif ($borrow->status == 'active') bg-primary
-                                    @elseif ($borrow->status == 'returned') bg-success
-                                    @elseif ($borrow->status == 'rejected') bg-danger
-                                    @endif
-                                ">
-                                    {{ ucfirst($borrow->status) }}
-                                </span>
-                                @if($borrow->admin_notes)
-                                    <div class="small text-muted">{{ $borrow->admin_notes }}</div>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">
-                                Belum ada riwayat peminjaman.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    @if($borrows->isEmpty())
+        <div class="bg-cyan-50 p-6 rounded-xl text-center text-gray-600 shadow">
+            Anda belum melakukan peminjaman buku.
         </div>
-    </div>
+    @else
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            @foreach($borrows as $borrow)
+                <div class="bg-white rounded-2xl shadow-lg p-6 hover:scale-[1.02] transition">
+                    <h3 class="text-lg font-semibold mb-2">
+                        {{ $borrow->book->title }}
+                    </h3>
+
+                    <p class="text-sm text-gray-500 mb-2">
+                        Peminjam: {{ $borrow->user->name }}
+                    </p>
+
+                    <div class="text-sm space-y-1">
+                        <p><strong>Tanggal Pinjam:</strong> {{ $borrow->borrow_date }}</p>
+                        <p><strong>Tanggal Kembali:</strong> {{ $borrow->return_date }}</p>
+                    </div>
+
+                    @if($borrow->status == 'pending')
+                        <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700">
+                            🕒 Menunggu Persetujuan
+                        </span>
+                    @elseif($borrow->status == 'approved')
+                        <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-green-100 text-green-700">
+                            ✅ Disetujui
+                        </span>
+                    @else
+                        <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-red-100 text-red-700">
+                            ❌ Ditolak
+                        </span>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    @endif
 
 </div>
 @endsection

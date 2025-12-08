@@ -145,7 +145,9 @@
                                 Kategori
                             </a>
 
-                            <a href="#" class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg">
+                            <a href="{{ route('user.borrows.index') }}" 
+                                class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                {{ request()->routeIs('user.borrows.*') ? 'active-bg' : '' }}">
                                 Peminjaman
                             </a>
 
@@ -212,8 +214,13 @@
                                 Kategori
                             </a>
 
-                            <a href="#" class="py-2 px-3 text-sm" style="color: var(--color-primary-dark);">
-                                Peminjaman</a>
+                            <a href="{{ route('user.borrows.index') }}"
+                                class="nav-link-item text-sm tracking-wide px-3 py-2 rounded-lg
+                                {{ request()->routeIs('user.borrows.*') ? 'active-bg' : '' }}">
+                                Peminjaman
+                            </a>
+
+
 
                             <a href="{{ route('user.profile.index') }}" class="py-2 px-3 text-sm"
                                 style="color: var(--color-primary-dark);">

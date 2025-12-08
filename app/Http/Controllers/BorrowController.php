@@ -9,60 +9,69 @@ use App\Models\Book;
 
 class BorrowController extends Controller
 {
-    // Tampilkan peminjaman user
+    // List semua peminjaman milik user
     public function index()
     {
         $borrows = Borrow::where('user_id', Auth::id())
             ->with('book')
             ->latest()
             ->get();
-            
+
         return view('user.borrows.index', compact('borrows'));
     }
 
-    // Form ajukan peminjaman
-    public function create()
+    // Form ajukan peminjaman (optional ?book_id=)
+    public function create(Request $request)
     {
-        $books = Book::where('stock', '>', 0)->get();
-        return view('user.borrows.create', compact('books'));
+        $bookId = $request->get('book_id');
+
+        $book = Book::findOrFail($bookId);
+
+        return view('user.borrows.create', compact('book'));
     }
 
-    // Ajukan peminjaman
+    // Store peminjaman
     public function store(Request $request)
     {
-       $request->validate([
-        'book_id' => 'required|exists:books,id',
-        'borrow_date' => 'required|date',
-        'return_date' => 'required|date|after_or_equal:borrow_date',
+        $request->validate([
+            'book_id' => 'required|exists:books,id',
+            'borrow_date' => 'required|date|after_or_equal:today',
+            'return_date' => 'required|date|after:borrow_date',
         ]);
 
-
         $book = Book::findOrFail($request->book_id);
-        
-        // Cek stok buku
+
         if ($book->stock < 1) {
-            return back()->withErrors(['error' => 'Buku tidak tersedia untuk dipinjam.']);
+            return back()->withErrors(['error' => 'Buku tidak tersedia untuk dipinjam.'])->withInput();
         }
 
-        // Cek apakah user sudah meminjam buku yang sama dan belum kembali
         $existingBorrow = Borrow::where('user_id', Auth::id())
             ->where('book_id', $request->book_id)
             ->whereIn('status', ['pending', 'approved', 'active'])
             ->first();
 
         if ($existingBorrow) {
-            return back()->withErrors(['error' => 'Anda sudah mengajukan peminjaman untuk buku ini.']);
+            return back()->withErrors(['error' => 'Anda sudah mengajukan peminjaman untuk buku ini.'])->withInput();
         }
 
-        Borrow::create([
+        $borrow = Borrow::create([
             'user_id' => auth()->id(),
             'book_id' => $request->book_id,
             'borrow_date' => $request->borrow_date,
             'return_date' => $request->return_date,
-            // status otomatis pending dari migration
+            'status' => 'pending',
+            'request_date' => now(),
         ]);
 
         return redirect()->route('user.borrows.index')
                      ->with('success', 'Permintaan peminjaman berhasil diajukan dan menunggu persetujuan admin.');
+    }
+
+    // (optional) show single borrow detail for user
+    public function show(Borrow $borrow)
+    {
+        $this->authorize('view', $borrow); // optional: add policy to ensure owner
+        $borrow->load('book', 'user', 'admin');
+        return view('user.borrows.show', compact('borrow'));
     }
 }

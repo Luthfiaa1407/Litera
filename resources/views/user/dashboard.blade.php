@@ -144,7 +144,7 @@
                                 </p>
 
                                 <!-- Button updated -->
-                                <a href="{{ route('users.books.show', $book) }}"
+                                <a href="{{ route('user.books.show', $book) }}"
                                     class="w-full block text-center py-3 rounded-lg font-semibold transition-all duration-300 hover:opacity-90 text-white"
                                     style="background: linear-gradient(135deg, #1E1B4B, #06B6D4); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.2);">
                                     <i class="fa-solid fa-book-reader mr-2"></i> Pinjam Sekarang

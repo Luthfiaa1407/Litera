@@ -92,7 +92,7 @@
 
                         <!-- Borrow Button -->
                         <!-- Updated button gradient to consistent indigo-to-cyan for all buttons -->
-                        <a href=""
+                        <a href="{{ route('user.borrows.create', ['book_id' => $book->id]) }}"
                             class="block w-full py-4 px-6 font-bold text-center rounded-lg transition-all shadow-md hover:shadow-lg hover:opacity-90 text-white"
                             style="background: linear-gradient(135deg, #1E1B4B, #0EA5E9); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.2);">
                             Pinjam Buku
