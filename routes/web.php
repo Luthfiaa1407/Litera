@@ -45,14 +45,17 @@ Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->na
 
 // ===================== ADMIN =====================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
+    // ===== Borrow Admin =====
     Route::prefix('borrows')->name('borrows.')->group(function () {
         Route::get('/pending', [AdminBorrowController::class, 'pending'])->name('pending');
         Route::post('/{id}/approve', [AdminBorrowController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [AdminBorrowController::class, 'reject'])->name('reject');
     });
 
+    // ===== Users =====
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [AuthController::class, 'adminUsersIndex'])->name('index');
         Route::get('/create', [AuthController::class, 'adminUsersCreate'])->name('create');
@@ -62,8 +65,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::delete('/{user}/delete', [AuthController::class, 'adminUsersDestroy'])->name('destroy');
     });
 
+    // ===== Books CRUD =====
     Route::resource('books', BookController::class);
+
+    // ✅ Tambahkan kembali Google Books routes
+    Route::prefix('books/google')->name('books.google.')->group(function () {
+        Route::get('/search', [GoogleBooksController::class, 'search'])->name('search');
+        Route::get('/detail/{id}', [GoogleBooksController::class, 'detail'])->name('detail');
+    });
+
+    // ===== Categories =====
     Route::resource('categories', CategoryController::class);
+
 });
 
 
