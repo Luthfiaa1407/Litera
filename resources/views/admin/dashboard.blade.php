@@ -156,10 +156,10 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <a href="{{ route('admin.borrows.pending') }}"
-   class="px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300">
-    <i class="fas fa-info-circle mr-2"></i>Detail
-</a>
+                                            <a href="#"
+                                                class="px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300">
+                                                <i class="fas fa-info-circle mr-2"></i>Detail
+                                            </a>
                                         </div>
                                     </div>
                                 </li>
