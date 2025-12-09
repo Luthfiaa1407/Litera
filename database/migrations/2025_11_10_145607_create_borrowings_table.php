@@ -14,16 +14,17 @@ return new class extends Migration
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
             $table->date('borrow_date');
             $table->date('return_date')->nullable();
-            
+            $table->date('return_date')->nullable();
+
             // Ubah enum status untuk sistem approval
             $table->enum('status', ['pending', 'approved', 'rejected', 'active', 'returned', 'auto_returned'])->default('pending');
-            
+
             // Tambah kolom untuk sistem approval
             $table->text('admin_notes')->nullable();
             $table->timestamp('request_date')->useCurrent();
             $table->timestamp('approved_date')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
-            
+
             $table->timestamps();
         });
     }

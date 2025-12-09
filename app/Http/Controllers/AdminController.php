@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use App\Models\Book;
 use App\Models\Borrow;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -14,7 +14,7 @@ class AdminController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // AUTO RETURN: Cek dan proses buku yang sudah lewat tanggal kembali
             $overdueBorrows = Borrow::where('status', 'active')
                 ->whereDate('return_date', '<', now()->toDateString())
@@ -23,7 +23,7 @@ class AdminController extends Controller
             foreach ($overdueBorrows as $borrow) {
                 // Kembalikan stok buku
                 $borrow->book->increment('stock');
-                
+
                 // Update status ke auto_returned
                 $borrow->update([
                     'status' => 'auto_returned',
@@ -33,7 +33,7 @@ class AdminController extends Controller
             $totalUsers = User::where('role', 'pengguna')->count();
             $totalAdmins = User::where('role', 'admin')->count();
             $totalBooks = Book::count();
-            
+
             // Statistik baru berdasarkan sistem approval
             $pendingRequests = Borrow::pending()->count();
             $activeBorrows = Borrow::active()->count();
@@ -54,9 +54,9 @@ class AdminController extends Controller
             return view('admin.dashboard', compact(
                 'user',
                 'totalUsers',
-                'totalAdmins', 
+                'totalAdmins',
                 'totalBooks',
-                'pendingRequests', 
+                'pendingRequests',
                 'activeBorrows',
                 'approvedRequests',
                 'autoReturnedCount',
@@ -64,7 +64,37 @@ class AdminController extends Controller
                 'pendingApprovals'
             ));
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal memuat dashboard: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal memuat dashboard: '.$e->getMessage()]);
         }
+    }
+
+    public function approve($id)
+    {
+        $borrow = Borrow::findOrFail($id);
+
+        // Jika hari ini >= return_date → auto return
+        if (now()->toDateString() >= $borrow->return_date) {
+
+            // Kembalikan stok buku
+            $borrow->book->increment('stock');
+
+            // Update status ke auto_returned
+            $borrow->update([
+                'status' => 'auto_returned',
+                'approved_by' => Auth::id(),
+                'approved_date' => now(),
+            ]);
+
+            return back()->with('success', 'Peminjaman sudah melewati tanggal kembali. Buku otomatis dikembalikan.');
+        }
+
+        // NORMAL APPROVE (jika belum jatuh tempo)
+        $borrow->update([
+            'status' => 'approved',
+            'approved_by' => Auth::id(),
+            'approved_date' => now(),
+        ]);
+
+        return back()->with('success', 'Peminjaman berhasil disetujui.');
     }
 }

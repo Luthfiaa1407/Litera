@@ -36,9 +36,17 @@
                             <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-green-100 text-green-700">
                                 Disetujui
                             </span>
-                        @else
+                        @elseif($borrow->status == 'active')
+                            <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-blue-100 text-blue-700">
+                                Sedang Dipinjam
+                            </span>
+                        @elseif($borrow->status == 'returned')
+                            <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-gray-200 text-gray-700">
+                                Dikembalikan
+                            </span>
+                        @elseif($borrow->status == 'rejected')
                             <span class="inline-block mt-4 px-4 py-1 rounded-full text-sm bg-red-100 text-red-700">
-                                Ditolak
+                                Ditolak Admin
                             </span>
                         @endif
 

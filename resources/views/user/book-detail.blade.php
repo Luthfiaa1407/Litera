@@ -5,13 +5,22 @@
     <div class="min-h-screen" style="background-color: #FFFFFF;">
         @if (session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
+                <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         @endif
 
         @if (session('error'))
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="p-4 bg-red-100 text-red-700 rounded-xl mb-4">
+                <ul class="list-disc ml-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
@@ -97,28 +106,30 @@
                         <!-- Borrow Button -->
                         <!-- Updated button gradient to consistent indigo-to-cyan for all buttons -->
                         <form action="{{ route('user.borrows.store') }}" method="POST" class="space-y-5">
-    @csrf
+                            @csrf
 
-    <input type="hidden" name="book_id" value="{{ $book->id }}">
+                            <input type="hidden" name="book_id" value="{{ $book->id }}">
 
-    <div>
-        <label class="block font-medium mb-1">Tanggal Pinjam</label>
-        <input type="date" name="borrow_date"
-            class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-cyan-400 focus:outline-none" required>
-    </div>
+                            <div>
+                                <label class="block font-medium mb-1">Tanggal Pinjam</label>
+                                <input type="date" name="borrow_date"
+                                    class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+                                    required>
+                            </div>
 
-    <div>
-        <label class="block font-medium mb-1">Tanggal Kembali</label>
-        <input type="date" name="return_date"
-            class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-cyan-400 focus:outline-none" required>
-    </div>
+                            <div>
+                                <label class="block font-medium mb-1">Tanggal Kembali</label>
+                                <input type="date" name="return_date"
+                                    class="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+                                    required>
+                            </div>
 
-    <button type="submit"
-        class="w-full py-3 rounded-xl text-white font-semibold text-lg transition hover:scale-[1.01]"
-        style="background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));">
-        Ajukan Peminjaman
-    </button>
-</form>
+                            <button type="submit"
+                                class="w-full py-3 rounded-xl text-white font-semibold text-lg transition hover:scale-[1.01]"
+                                style="background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));">
+                                Ajukan Peminjaman
+                            </button>
+                        </form>
 
 
                     </div>

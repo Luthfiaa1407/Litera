@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
+use App\Models\Borrow;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Borrow;
-use App\Models\Book;
 
 class BorrowController extends Controller
 {
-    // List semua peminjaman milik user
     public function index()
     {
         $borrows = Borrow::where('user_id', Auth::id())
@@ -17,19 +17,33 @@ class BorrowController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // AUTO RETURN jika overdue
+        foreach ($borrows as $borrow) {
+
+            if (
+                in_array($borrow->status, ['approved', 'active']) &&
+                $borrow->return_date !== null &&
+                Carbon::parse($borrow->return_date)->isPast()
+            ) {
+                $borrow->update([
+                    'status' => 'auto_returned',
+                    'return_date' => now(),
+                ]);
+
+                $borrow->book->increment('stock');
+            }
+        }
+
         return view('user.borrows.index', compact('borrows'));
     }
 
-    // Form ajukan peminjaman
     public function create(Request $request)
     {
-        $bookId = $request->get('book_id');
-        $book = Book::findOrFail($bookId);
+        $book = Book::findOrFail($request->book_id);
 
         return view('user.borrows.create', compact('book'));
     }
 
-    // Simpan permintaan peminjaman (PENDING)
     public function store(Request $request)
     {
         $request->validate([
@@ -38,36 +52,34 @@ class BorrowController extends Controller
             'return_date' => 'required|date|after_or_equal:borrow_date',
         ]);
 
-        $book = Book::find($request->book_id);
+        $book = Book::findOrFail($request->book_id);
 
         if ($book->stock <= 0) {
-            return back()->with('error', 'Maaf, stok buku habis.');
+            return back()->with('error', 'Stok buku habis.');
         }
 
-        // Cegah double request
-        $activeStatuses = ['pending', 'approved', 'active'];
-        $cek = Borrow::where('user_id', auth()->id())
+        // CEGAH double request (pending BUKAN status aktif)
+        $cek = Borrow::where('user_id', Auth::id())
             ->where('book_id', $book->id)
-            ->whereIn('status', $activeStatuses) // ✅ Gunakan whereIn
+            ->whereIn('status', ['approved', 'active'])
             ->first();
 
         if ($cek) {
-            return back()->with('error', 'Anda masih memiliki peminjaman/permintaan aktif untuk buku ini (Status: ' . ucfirst($cek->status) . ').');
+            return back()->with('error', 'Anda masih memiliki peminjaman aktif untuk buku ini.');
         }
 
-        // Simpan sebagai PENDING
         Borrow::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'book_id' => $book->id,
-            'borrow_date' => $request->borrow_date, // Ambil dari form
-            'due_date' => $request->return_date,  // Ambil dari form
-            'status' => 'pending', // Status pinjaman baru
+            'borrow_date' => $request->borrow_date,
+            'return_date' => $request->return_date,
+            'status' => 'pending',
         ]);
 
-        return redirect()->route('user.dashboard')->with('success', 'Permintaan pinjam buku berhasil diajukan! Menunggu persetujuan Admin.');
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Permintaan peminjaman berhasil diajukan.');
     }
 
-    // Detail peminjaman
     public function show(Borrow $borrow)
     {
         if ($borrow->user_id !== Auth::id()) {
@@ -80,23 +92,18 @@ class BorrowController extends Controller
     }
 
     public function return(Borrow $borrow)
-{
-    // Pastikan hanya pemilik yang bisa kembalikan
-    if ($borrow->user_id !== Auth::id()) {
-        abort(403);
+    {
+        if ($borrow->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $borrow->update([
+            'status' => 'returned',
+            'return_date' => now(),
+        ]);
+
+        $borrow->book->increment('stock');
+
+        return back()->with('success', 'Buku berhasil dikembalikan.');
     }
-
-    // Update status peminjaman
-    $borrow->update([
-        'status' => 'returned',
-        'returned_at' => now(),
-    ]);
-
-    // Tambah stok buku
-    $borrow->book->increment('stock');
-
-    return back()->with('success', 'Buku berhasil dikembalikan.');
-}
-
-
 }

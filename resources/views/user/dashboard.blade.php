@@ -81,7 +81,7 @@
                                         <div class="flex justify-between">
                                             <span class="text-gray-500">Jatuh Tempo</span>
                                             <span class="font-semibold">
-                                                {{ $borrow->return_date ? \Carbon\Carbon::parse($borrow->return_date)->format('d M Y') : '-' }}
+                                                {{ $borrow->return_date ? \Carbon\Carbon::parse($borrow->return_date )->format('d M Y') : '-' }}
                                             </span>
                                         </div>
                                         <div class="mt-4">

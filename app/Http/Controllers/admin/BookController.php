@@ -45,7 +45,7 @@ class BookController extends Controller
             'user_id' => auth()->id(),
             'book_id' => $book->id,
             'borrow_date' => now(),
-            'due_date' => now()->addDays(7),
+            'return_date' => now()->addDays(7),
             'status' => 'pending', // ✅ PERBAIKAN: Gunakan 'pending' untuk pinjaman baru
         ]);
         // Kurangi stok buku

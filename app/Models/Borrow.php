@@ -15,19 +15,19 @@ class Borrow extends Model
         'user_id',
         'book_id',
         'borrow_date',
-        'return_date', 
+        'return_date',
         'status', // ['pending', 'approved', 'rejected', 'active', 'returned', 'auto_returned']
         'admin_notes',
         'request_date',
         'approved_date',
-        'approved_by'
+        'approved_by',
     ];
 
     protected $dates = [
         'borrow_date',
         'return_date',
         'request_date',
-        'approved_date'
+        'approved_date',
     ];
 
     public function user()
@@ -53,7 +53,7 @@ class Borrow extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->whereIn('status', ['approved', 'active']);
     }
 
     public function scopeApproved($query)
