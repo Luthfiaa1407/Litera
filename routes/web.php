@@ -42,7 +42,6 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
 
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
 // ===================== ADMIN =====================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
@@ -79,7 +78,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 });
 
-
 // ===================== USER =====================
 // ================= USER ROUTES =================
 Route::middleware(['auth', 'verified.email'])->group(function () {
@@ -91,16 +89,19 @@ Route::middleware(['auth', 'verified.email'])->group(function () {
     Route::get('/books', [BookController::class, 'userBooks'])->name('user.books');
     Route::get('/books/{book}', [BookController::class, 'show'])->name('user.books.show');
 
+    // Baca Buku
+    Route::get('/read/{book}', [BookController::class, 'read'])->name('user.books.read');
+
     // Form pinjam (jika mau pakai halaman khusus)
     Route::prefix('borrows')->name('borrows.')->group(function () {
-    Route::get('/', [BorrowController::class, 'index'])->name('index');
-    Route::get('/create', [BorrowController::class, 'create'])->name('create');
-    Route::post('/store', [BorrowController::class, 'store'])->name('store');
-    Route::get('/{borrow}', [BorrowController::class, 'show'])->name('show');
+        Route::get('/', [BorrowController::class, 'index'])->name('index');
+        Route::get('/create', [BorrowController::class, 'create'])->name('create');
+        Route::post('/store', [BorrowController::class, 'store'])->name('store');
+        Route::get('/{borrow}', [BorrowController::class, 'show'])->name('show');
 
-    // ✅ Return buku (cukup satu route saja)
-    Route::post('/{borrow}/return', [BorrowController::class, 'returnBook'])->name('return');
-});
+        // ✅ Return buku (cukup satu route saja)
+        Route::post('/{borrow}/return', [BorrowController::class, 'returnBook'])->name('return');
+    });
 
     // Simpan pinjaman dari FORM / tombol
     Route::post('/user/borrows/store', [BorrowController::class, 'store'])

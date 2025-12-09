@@ -37,7 +37,7 @@ class BookController extends Controller
             ->first();
 
         if ($cek) {
-            return redirect()->route('user.books.show', $book) ->with('error', 'Anda masih memiliki peminjaman/permintaan aktif untuk buku ini (Status: ' . ucfirst($cek->status) . ').');
+            return redirect()->route('user.books.show', $book)->with('error', 'Anda masih memiliki peminjaman/permintaan aktif untuk buku ini (Status: '.ucfirst($cek->status).').');
         }
 
         // Simpan ke tabel borrowings
@@ -52,7 +52,7 @@ class BookController extends Controller
         $book->decrement('stock');
 
         return redirect()->route('user.dashboard')
-        ->with('success', 'Permintaan pinjam buku berhasil diajukan! Menunggu persetujuan Admin.');
+            ->with('success', 'Permintaan pinjam buku berhasil diajukan! Menunggu persetujuan Admin.');
     }
 
     /**
@@ -66,7 +66,7 @@ class BookController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('author', 'like', "%{$search}%");
+                    ->orWhere('author', 'like', "%{$search}%");
             });
         }
 
@@ -217,5 +217,14 @@ class BookController extends Controller
         return redirect()
             ->route('admin.books.index')
             ->with('success', 'Buku berhasil dihapus!');
+    }
+
+    public function read(Book $book)
+    {
+        if (! $book->file_path || ! Storage::disk('public')->exists($book->file_path)) {
+            return back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return response()->file(storage_path('app/public/'.$book->file_path));
     }
 }
