@@ -13,33 +13,39 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyOtpController;
 use Illuminate\Support\Facades\Route;
 
+// ===================== LANDING PAGE =====================
 Route::get('/', function () {
     return view('landing');
+})->name('landing');
+
+// ===================== AUTH (GUEST ONLY) =====================
+Route::middleware('guest.redirect')->group(function () {
+
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+        ->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+        ->name('password.email');
+
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+        ->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->name('password.update');
+
+    Route::get('/verify-otp', [VerifyOtpController::class, 'showVerifyForm'])
+        ->name('verify.otp.form');
+    Route::post('/verify-otp', [VerifyOtpController::class, 'verify'])
+        ->name('verify.otp');
+    Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])
+        ->name('verify.otp.resend');
 });
 
-// ===================== AUTH =====================
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
-Route::get('/verify-otp', [VerifyOtpController::class, 'showVerifyForm'])->name('verify.otp.form');
-Route::post('/verify-otp', [VerifyOtpController::class, 'verify'])->name('verify.otp');
-Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])->name('verify.otp.resend');
-
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
-    ->name('password.request');
-
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
-    ->name('password.email');
-
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
-
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
-    ->name('password.update');
-
+// Logout (harus login)
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ===================== ADMIN =====================
@@ -67,7 +73,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // ===== Books CRUD =====
     Route::resource('books', BookController::class);
 
-    // ✅ Tambahkan kembali Google Books routes
+    // Google Books integration
     Route::prefix('books/google')->name('books.google.')->group(function () {
         Route::get('/search', [GoogleBooksController::class, 'search'])->name('search');
         Route::get('/detail/{id}', [GoogleBooksController::class, 'detail'])->name('detail');
@@ -78,36 +84,33 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 });
 
-// ===================== USER =====================
-// ================= USER ROUTES =================
+// ===================== USER (LOGIN + VERIFIED) =====================
 Route::middleware(['auth', 'verified.email'])->group(function () {
 
     // Dashboard
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
 
-    // Buku (user view)
+    // Buku
     Route::get('/books', [BookController::class, 'userBooks'])->name('user.books');
     Route::get('/books/{book}', [BookController::class, 'show'])->name('user.books.show');
 
-    // Baca Buku
+    // Baca buku
     Route::get('/read/{book}', [BookController::class, 'read'])->name('user.books.read');
 
-    // Form pinjam (jika mau pakai halaman khusus)
+    // Borrow
     Route::prefix('borrows')->name('borrows.')->group(function () {
         Route::get('/', [BorrowController::class, 'index'])->name('index');
         Route::get('/create', [BorrowController::class, 'create'])->name('create');
         Route::post('/store', [BorrowController::class, 'store'])->name('store');
         Route::get('/{borrow}', [BorrowController::class, 'show'])->name('show');
-
-        // ✅ Return buku (cukup satu route saja)
         Route::post('/{borrow}/return', [BorrowController::class, 'returnBook'])->name('return');
     });
 
-    // Simpan pinjaman dari FORM / tombol
+    // Extra store route
     Route::post('/user/borrows/store', [BorrowController::class, 'store'])
         ->name('user.borrows.store');
 
-    // Halaman daftar peminjaman user
+    // List borrow user
     Route::get('/user/borrows', [BorrowController::class, 'index'])
         ->name('user.borrows.index');
 
