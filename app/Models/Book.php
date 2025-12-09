@@ -20,6 +20,8 @@ class Book extends Model
         'cover',
         'file_path',
         'description',
+        'stock',
+        'status',
     ];
 
     // Relasi ke category

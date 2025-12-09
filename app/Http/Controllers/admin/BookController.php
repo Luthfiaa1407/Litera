@@ -142,7 +142,7 @@ class BookController extends Controller
             'cover' => $cover,
             'file_path' => $file_path,
             'description' => $request->description,
-            'stock' => $request->stock ?? 1,
+            'stock' => $request->stock ?? 0,
         ]);
 
         return redirect()

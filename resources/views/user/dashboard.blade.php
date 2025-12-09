@@ -101,11 +101,20 @@
                     <div class="p-6">
                         <h3 class="font-bold text-lg text-indigo-900">{{ $book->title }}</h3>
                         <p class="text-sm text-gray-500 mb-4">{{ $book->author }}</p>
-
-                        <a href="{{ route('user.books.show', $book) }}"
-                           class="block w-full text-center py-3 rounded-lg text-white bg-gradient-to-r from-indigo-900 to-cyan-500">
-                           Pinjam Sekarang
-                        </a>
+                        <p class="text-sm font-medium text-gray-700 mb-4">
+                         Stok Tersedia: <span class="font-bold text-cyan-600">{{ $book->stock }}</span>
+                        </p>
+                        @if ($book->stock > 0)
+                            <a href="{{ route('user.books.show', $book) }}"
+                                class="block w-full text-center py-3 rounded-lg text-white bg-gradient-to-r from-indigo-900 to-cyan-500">
+                                Pinjam Sekarang
+                            </a>
+                        @else
+                            <button disabled
+                            class="block w-full text-center py-3 rounded-lg text-gray-500 bg-gray-200 cursor-not-allowed">
+                            Stok Habis ({{ $book->stock }})
+                            </button>
+                        @endif
                     </div>
                 </div>
                 @empty

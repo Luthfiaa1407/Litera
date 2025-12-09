@@ -39,7 +39,7 @@ return new class extends Migration
             $table->text('description')->nullable();
 
             // Stok
-            $table->integer('stock')->default(1);
+            $table->integer('stock')->default(0);
 
             // Status buku
             $table->enum('status', ['available', 'unavailable'])

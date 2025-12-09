@@ -45,7 +45,7 @@ class UserController extends Controller
         $books_count = Book::count();
 
         // Buku tersedia
-        $available_books = Book::where('stock', '>', 0)->take(6)->get();
+        $available_books = Book::latest()->take(6)->get();
 
         return view('user.dashboard', compact(
             'user',
