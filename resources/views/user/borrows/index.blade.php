@@ -50,13 +50,15 @@
                             </span>
                         @endif
 
-                        <div class="mt-4">
-                            <a href="{{ route('user.books.read', $borrow->book->id) }}" target="_blank"
-                                rel="noopener noreferrer"
-                                class="block w-full text-center py-3 rounded-lg text-white bg-gradient-to-r from-indigo-900 to-cyan-500">
-                                Baca Sekarang
-                            </a>
-                        </div>
+                        @if (in_array($borrow->status, ['approved', 'active']))
+                            <div class="mt-4">
+                                <a href="{{ route('user.books.read', $borrow->book->id) }}" target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block w-full text-center py-3 rounded-lg text-white bg-gradient-to-r from-indigo-900 to-cyan-500">
+                                    Baca Sekarang
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>

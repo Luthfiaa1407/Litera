@@ -27,11 +27,10 @@
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                 @php
                     $stats = [
                         ['icon' => 'fa-book', 'label' => 'PEMINJAMAN AKTIF', 'value' => $active_count],
-                        ['icon' => 'fa-calendar', 'label' => 'SISA WAKTU', 'value' => $days_left ?? '-'],
                         ['icon' => 'fa-layer-group', 'label' => 'TOTAL BUKU', 'value' => $books_count],
                     ];
                 @endphp
@@ -81,7 +80,7 @@
                                         <div class="flex justify-between">
                                             <span class="text-gray-500">Jatuh Tempo</span>
                                             <span class="font-semibold">
-                                                {{ $borrow->return_date ? \Carbon\Carbon::parse($borrow->return_date )->format('d M Y') : '-' }}
+                                                {{ $borrow->return_date ? \Carbon\Carbon::parse($borrow->return_date)->format('d M Y') : '-' }}
                                             </span>
                                         </div>
                                         <div class="mt-4">
