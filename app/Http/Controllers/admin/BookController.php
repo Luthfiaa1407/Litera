@@ -30,13 +30,14 @@ class BookController extends Controller
         }
 
         // Cek apakah user sedang meminjam buku yang sama
+        $activeStatuses = ['pending', 'approved', 'active'];
         $cek = Borrow::where('user_id', auth()->id())
             ->where('book_id', $book->id)
-            ->where('status', 'dipinjam')
+            ->whereIn('status', $activeStatuses)
             ->first();
 
         if ($cek) {
-            return back()->with('error', 'Anda sudah meminjam buku ini.');
+            return redirect()->route('user.books.show', $book) ->with('error', 'Anda masih memiliki peminjaman/permintaan aktif untuk buku ini (Status: ' . ucfirst($cek->status) . ').');
         }
 
         // Simpan ke tabel borrowings
@@ -45,14 +46,13 @@ class BookController extends Controller
             'book_id' => $book->id,
             'borrow_date' => now(),
             'due_date' => now()->addDays(7),
-            'status' => 'dipinjam',
+            'status' => 'pending', // ✅ PERBAIKAN: Gunakan 'pending' untuk pinjaman baru
         ]);
-
         // Kurangi stok buku
         $book->decrement('stock');
 
         return redirect()->route('user.dashboard')
-            ->with('success', 'Buku berhasil dipinjam!');
+        ->with('success', 'Permintaan pinjam buku berhasil diajukan! Menunggu persetujuan Admin.');
     }
 
     /**
