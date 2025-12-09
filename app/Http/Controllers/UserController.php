@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
@@ -31,13 +31,15 @@ class UserController extends Controller
         $days_left = null;
         if ($active_borrows->isNotEmpty()) {
             $nearest = $active_borrows
-                ->filter(fn($b) => !empty($b->return_date))
+                ->filter(fn ($b) => ! empty($b->return_date))
                 ->sortBy('return_date')
                 ->first();
 
             if ($nearest && $nearest->return_date) {
                 $days_left = now()->diffInDays(Carbon::parse($nearest->return_date), false);
-                if ($days_left < 0) $days_left = 0;
+                if ($days_left < 0) {
+                    $days_left = 0;
+                }
             }
         }
 
@@ -60,12 +62,32 @@ class UserController extends Controller
     public function showProfile()
     {
         $user = Auth::user();
-        return view('user.profile.index', compact('user'));
+
+        // Total semua peminjaman
+        $total_peminjaman = $user->borrowings()->count();
+
+        // Peminjaman aktif
+        $peminjaman_aktif = $user->borrowings()
+            ->whereIn('status', ['approved', 'active', 'dipinjam'])
+            ->count();
+
+        // Riwayat peminjaman (yang sudah selesai / dikembalikan / dibatalkan)
+        $riwayat_peminjaman = $user->borrowings()
+            ->whereIn('status', ['returned', 'selesai', 'ditolak', 'dibatalkan'])
+            ->count();
+
+        return view('user.profile.index', compact(
+            'user',
+            'total_peminjaman',
+            'peminjaman_aktif',
+            'riwayat_peminjaman'
+        ));
     }
 
     public function editProfile()
     {
         $user = Auth::user();
+
         return view('user.profile.edit', compact('user'));
     }
 
@@ -74,12 +96,12 @@ class UserController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
         ]);
 
         $user->update([
-            'name'  => $request->name,
+            'name' => $request->name,
             'email' => $request->email,
         ]);
 
@@ -93,10 +115,10 @@ class UserController extends Controller
 
         $request->validate([
             'current_password' => 'required|string',
-            'password'         => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
@@ -111,6 +133,7 @@ class UserController extends Controller
     public function books()
     {
         $books = Book::where('stock', '>', 0)->paginate(12);
+
         return view('user.books.index', compact('books'));
     }
 
@@ -118,4 +141,6 @@ class UserController extends Controller
     {
         return view('user.book-detail', compact('book'));
     }
+
+
 }
